@@ -14,16 +14,24 @@ type GLTFResult = GLTF & {
   materials: {};
 };
 
-export default function Model(props: JSX.IntrinsicElements["group"]) {
+export default function Model(
+  props: JSX.IntrinsicElements["group"] & { position: [number, number, number] }
+) {
+  const { position, ...restProps } = props;
   const { nodes, materials } = useGLTF("./keycap.glb") as GLTFResult;
+
   return (
-    <group {...props} dispose={null}>
+    <group position={position} {...restProps} dispose={null}>
       <mesh
         castShadow
         receiveShadow
+        scale={[0.1, 0.1, 0.1]}
         geometry={nodes.keycap.geometry}
         material={nodes.keycap.material}
-      />
+        rotation={[Math.PI / 2, 0, 0]}
+      >
+        <meshStandardMaterial attach="material" color="hotpink" />
+      </mesh>
     </group>
   );
 }
