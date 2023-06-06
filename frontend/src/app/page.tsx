@@ -3,7 +3,7 @@ import React from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Box } from "@chakra-ui/react";
-import Key from "../components/Key";
+import Keyboard from "../components/Keyboard";
 
 function Cube() {
   // for reference
@@ -22,12 +22,10 @@ export default function Home() {
         <Canvas>
           <OrbitControls />
           <ambientLight intensity={0.3} position={[0, -0, -5]}/>
-          <spotLight position={[0, -0, 30]} angle={0.3}/>
-          <Key position={[-2, 0, 0]} />
-          <Key position={[0, 0, 0]} />
-          <Key position={[2, 0, 0]} />
+          <spotLight position={[0, -0, 100]} angle={0.3}/>
+          <Keyboard/>
         </Canvas>
-      </Box>
+      </Box>dd
     </>
   );
 }
