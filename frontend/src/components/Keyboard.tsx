@@ -7,7 +7,7 @@ export default function Home() {
   const topRow = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
   const middleRow = ["A", "S", "D", "F", "G", "H", "J", "K", "L"];
   const bottomRow = ["Z", "X", "C", "V", "B", "N", "M"];
-  const [activeButton, setActiveButton] = useState<string>("");
+  const [activeButtons, setActiveButtons] = useState<string[]>([]);
   const keyDat = [];
 
   for (let i = 0; i < topRow.length; i++) {
@@ -22,11 +22,11 @@ export default function Home() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      setActiveButton(event.key.toUpperCase());
+      setActiveButtons(prevList => [...prevList, event.key.toUpperCase()]);
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      setActiveButton("");
+      setActiveButtons(prevList => prevList.filter(item => item !== event.key.toUpperCase()));
     };
 
     document.addEventListener('keydown', handleKeyDown);
@@ -42,7 +42,7 @@ export default function Home() {
   return (
     <>
       {keyDat.map((key) => (
-        <Key key={key.id} position={key.position} colour={activeButton == key.id ? 'pink' : 'hotpink'}/>
+        <Key key={key.id} position={key.position} colour={activeButtons.includes(key.id) ? 'beige' : 'hotpink'}/>
       ))}
     </>
   );
