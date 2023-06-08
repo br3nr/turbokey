@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
-import { Box } from "@chakra-ui/react";
+import { Box, Center, Text } from "@chakra-ui/react";
 import Scene from "../components/Scene/Scene";
+import TypeControls from "../components/TypeControls/TypeControls";
 
 function Cube() {
   // for reference
@@ -16,8 +17,11 @@ function Cube() {
 export default function Home() {
   return (
     <>
-      <Box height="100vh">
-        <Scene></Scene>
+      <Box height="20vh">
+        <TypeControls/>
+      </Box>
+      <Box height="8asd0vh">
+        <Scene/>
       </Box>
     </>
   );
