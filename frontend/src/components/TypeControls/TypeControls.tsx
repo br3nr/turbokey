@@ -1,45 +1,50 @@
-import { useState, useEffect } from "react";
-import { Box, Center, Text } from "@chakra-ui/react";
-
+import React, { use, useEffect, useRef, useState } from "react";
+import { Box, Center, Text, Input } from "@chakra-ui/react";
+import ts from "typescript";
 
 function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
-  const alphabetOrGrammarRegex = /^[a-zA-Z!-/:-@[-`{-~]$/;
+  const alphabetOrGrammarRegex = /^[a-zA-Z0-9!-/:-@[-`{-~ ]+$/;
   return alphabetOrGrammarRegex.test(event.key);
 }
 
 export default function TypeControls() {
-
-	const [curKeys, setCurKeys] = useState<string[]>([]);
+  const [curKeys, setCurKeys] = useState<string[]>([]);
+  const inputRef = useRef(null);
 
   useEffect(() => {
-
     const handleKeyDown = (event: KeyboardEvent) => {
-			// if event key is letter, add to curKeys
-			if(isAlphabetOrGrammar(event)){
-				setCurKeys((prevList) => [...prevList, event.key]);
-			}
+      if (isAlphabetOrGrammar(event)) {
+        setCurKeys((prevList) => [...prevList, event.key]);
+      } else if (event.key === "Backspace") {
+        setCurKeys((prevList) => prevList.slice(0, -1));
+      }
     };
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-			if(event.key === "Backspace"){
-				setCurKeys((prevList) => prevList.slice(0, -1));
-			}
-		};
+    const focusInput = () => {
+      //@ts-ignore  
+      inputRef.current.focus(); // use ref issue, fix later
+    };
+
+    focusInput();
 
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
+
+  useEffect(() => {
+    console.log(curKeys);
+  }, [curKeys]);
 
   return (
     <>
       <Center>
-				<Text fontSize="6xl">{curKeys}</Text>
-			</Center>
+        <div tabIndex={0} ref={inputRef}>
+          <p>{curKeys}</p>
+        </div>
+      </Center>
     </>
   );
 }
