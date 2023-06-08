@@ -14,7 +14,7 @@ type GLTFResult = GLTF & {
   materials: {};
 };
 
-export default function Model(
+export default function Key(
   props: JSX.IntrinsicElements["group"] & { position: [number, number, number] } & { colour: string }
 ) {
   const { position, ...restProps } = props;
