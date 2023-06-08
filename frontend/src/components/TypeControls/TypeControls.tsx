@@ -1,19 +1,30 @@
 import { useState, useEffect } from "react";
 import { Box, Center, Text } from "@chakra-ui/react";
 
+
+function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
+  const alphabetOrGrammarRegex = /^[a-zA-Z!-/:-@[-`{-~]$/;
+  return alphabetOrGrammarRegex.test(event.key);
+}
+
 export default function TypeControls() {
 
 	const [curKeys, setCurKeys] = useState<string[]>([]);
 
   useEffect(() => {
+
     const handleKeyDown = (event: KeyboardEvent) => {
-      setCurKeys((prevList) => [...prevList, event.key]);
-			console.log(event.key)
+			// if event key is letter, add to curKeys
+			if(isAlphabetOrGrammar(event)){
+				setCurKeys((prevList) => [...prevList, event.key]);
+			}
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-			setCurKeys((prevList) => prevList.filter((item) => item !== event.key));
-    };
+			if(event.key === "Backspace"){
+				setCurKeys((prevList) => prevList.slice(0, -1));
+			}
+		};
 
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
