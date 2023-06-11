@@ -18,10 +18,10 @@ export default function Home() {
   return (
     <>
       <Box height="20vh">
-        <TypeControls/>
+        <TypeControls />
       </Box>
       <Box height="80vh">
-        <Scene/>
+        <Scene />
       </Box>
     </>
   );
