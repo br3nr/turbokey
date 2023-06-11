@@ -47,11 +47,9 @@ export default function TypeControls() {
             <Text color="green.500">&nbsp;</Text>
           ) : letter === curKeys[index] ? (
             <Text color="green.500">{letter}</Text>
-          ) : curKeys[index] === undefined ? 
-          (
+          ) : curKeys[index] === undefined ? (
             <Text color="gray.500">{letter}</Text>
-          ):
-          (
+          ) : (
             <Text color="red.500">{letter}</Text>
           );
         })}

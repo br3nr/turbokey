@@ -15,7 +15,9 @@ type GLTFResult = GLTF & {
 };
 
 export default function Key(
-  props: JSX.IntrinsicElements["group"] & { position: [number, number, number] } & { colour: string }
+  props: JSX.IntrinsicElements["group"] & {
+    position: [number, number, number];
+  } & { colour: string }
 ) {
   const { position, ...restProps } = props;
   const { nodes, materials } = useGLTF("./keycap.glb") as GLTFResult;

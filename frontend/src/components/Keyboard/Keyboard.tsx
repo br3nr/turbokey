@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Key from "../Key/Key";
 
-
 export default function Keyboard() {
   const topRow = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
   const middleRow = ["A", "S", "D", "F", "G", "H", "J", "K", "L"];
@@ -21,27 +20,33 @@ export default function Keyboard() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      setActiveButtons(prevList => [...prevList, event.key.toUpperCase()]);
+      setActiveButtons((prevList) => [...prevList, event.key.toUpperCase()]);
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      setActiveButtons(prevList => prevList.filter(item => item !== event.key.toUpperCase()));
+      setActiveButtons((prevList) =>
+        prevList.filter((item) => item !== event.key.toUpperCase())
+      );
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
 
     // Clean up event listeners on component unmount
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
 
   return (
     <>
       {keyDat.map((key) => (
-        <Key key={key.id} position={key.position} colour={activeButtons.includes(key.id) ? 'beige' : 'hotpink'}/>
+        <Key
+          key={key.id}
+          position={key.position}
+          colour={activeButtons.includes(key.id) ? "beige" : "hotpink"}
+        />
       ))}
     </>
   );
