@@ -1,15 +1,36 @@
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Center, Text, Input } from "@chakra-ui/react";
 import ts from "typescript";
+import { SocketAddress } from "net";
 
 function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
   const alphabetOrGrammarRegex = /^[a-zA-Z0-9!-/:-@[-`{-~ ]+$/;
   return alphabetOrGrammarRegex.test(event.key);
 }
 
+function getWordList(sentence: string): string[]
+{
+  const words = sentence.split(" ");
+  const wordList: string[] = [];
+  for(let i = 0; i < words.length; i++)
+  {
+    if(i != words.length - 1)
+    {
+      wordList[i] = words[i] + " "
+    }
+    else
+    {
+      wordList[i] = words[i]
+    }
+  }
+
+  return wordList
+}
+
 export default function TypeControls() {
   const [curKeys, setCurKeys] = useState<string[]>([]);
-  const targetWord = ["H", "e", "l", "l", "o", " ", "W", "o", "r", "l", "d"];
+  const targetSentence =  "Hello world, welcome to Turbo Key."
+  const wordList = getWordList(targetSentence)
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -42,7 +63,7 @@ export default function TypeControls() {
   return (
     <>
       <Center>
-        {targetWord.map((letter, index) => {
+        {wordList.map((letter, index) => {
           return letter === " " ? (
             <Text color="green.500">&nbsp;</Text>
           ) : letter === curKeys[index] ? (
