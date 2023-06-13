@@ -8,18 +8,15 @@ function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
   return alphabetOrGrammarRegex.test(event.key);
 }
 
-function getWordList(sentence: string): string[]
-{
+function getWordList(sentence: string): string[] {
   const words = sentence.split(" ");
   const wordList: string[] = [];
-  for(let i = 0; i < words.length; i++)
-  {
-    if(i != words.length - 1)
-    {
+
+  for (let i = 0; i < words.length; i++) {
+    if (i != words.length - 1) {
       wordList[i] = words[i] + " "
     }
-    else
-    {
+    else {
       wordList[i] = words[i]
     }
   }
@@ -29,7 +26,7 @@ function getWordList(sentence: string): string[]
 
 export default function TypeControls() {
   const [curKeys, setCurKeys] = useState<string[]>([]);
-  const targetSentence =  "Hello world, welcome to Turbo Key."
+  const targetSentence = "Hello world, welcome to Turbo Key."
   const wordList = getWordList(targetSentence)
   const inputRef = useRef(null);
 
@@ -63,7 +60,7 @@ export default function TypeControls() {
   return (
     <>
       <Center>
-        {wordList.map((letter, index) => {
+        {targetSentence.split("").map((letter, index) => {
           return letter === " " ? (
             <Text color="green.500">&nbsp;</Text>
           ) : letter === curKeys[index] ? (
