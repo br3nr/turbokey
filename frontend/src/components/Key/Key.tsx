@@ -17,10 +17,10 @@ type GLTFResult = GLTF & {
 export default function Key(
   props: JSX.IntrinsicElements["group"] & {
     position: [number, number, number];
-  } & { colour: string }
+  } & { colour: string } & { size: string }
 ) {
   const { position, ...restProps } = props;
-  const { nodes, materials } = useGLTF("./keycap.glb") as GLTFResult;
+  const { nodes, materials } = useGLTF(`/keycaps/${props.size}.glb`) as GLTFResult;
 
   return (
     <group position={position} {...restProps} dispose={null}>
@@ -38,4 +38,4 @@ export default function Key(
   );
 }
 
-useGLTF.preload("/keycap.glb");
+useGLTF.preload("/keycaps/1u.glb");
