@@ -5,7 +5,7 @@ import Keyboard from "../Keyboard/Keyboard";
 export default function Scene() {
   return (
     <>
-      <Canvas camera={{fov:40, position:[0,0,20]}}>
+      <Canvas camera={{fov:20, position:[0,0,50]}}>
         <OrbitControls/>  
         <ambientLight intensity={0.3} position={[0, -0, -5]} />
         <spotLight position={[0, -0, 100]} angle={0.3} />
