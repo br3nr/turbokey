@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Wrap, Box, Center, Text, Input } from "@chakra-ui/react";
-import ts from "typescript";
-import { SocketAddress } from "net";
+import { generateWordList } from "@/utils/generateWordList";
+import Papa from "papaparse";
 
 function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
   const alphabetOrGrammarRegex = /^[a-zA-Z0-9!-/:-@[-`{-~ ]+$/;
@@ -19,15 +19,22 @@ function getWordList(sentence: string): string[] {
       wordList[i] = words[i];
     }
   }
-
   return wordList;
 }
 
 export default function TypeControls() {
   const [curKeys, setCurKeys] = useState<string[]>([]);
-  const targetSentence = "Hello world, welcome to Turbo Key. Type out the words you can see!";
+  const [targetSentence, setTargetSentence] = useState<string>(""); // TODO: replace with words from backend
   const wordList = getWordList(targetSentence);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    const getWordList = async () => {
+      const sentence = await generateWordList();
+      setTargetSentence(sentence);
+    };
+    getWordList();
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -59,7 +66,7 @@ export default function TypeControls() {
   return (
     <>
       <Center>
-        <Wrap width="350px"spacing="0px">
+        <Wrap width="350px" spacing="0px">
           {targetSentence.split("").map((letter, index) => {
             return letter === " " ? (
               <Text color="green.500">&nbsp;</Text>
