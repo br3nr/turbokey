@@ -27,12 +27,10 @@ export default function Keyboard() {
     });
   }
 
-  keyDat.push({ id: "Space", position: [-4.2  , -6, 0], size: "625u" });
+  keyDat.push({ id: "Space", position: [-4.2, -6, 0], size: "625u" });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      console.log(event.code);
-
       // if the event key is a single character, add it to the list
       if (event.code === "Space") {
         setActiveButtons((prevList) => [...prevList, event.code]);

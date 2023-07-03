@@ -16,6 +16,5 @@ export async function generateWordList(): Promise<string> {
 	
 		sentence += randomWord + " ";
 	}
-	console.log(sentence);
   return sentence;
 }

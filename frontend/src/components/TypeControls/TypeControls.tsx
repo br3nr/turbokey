@@ -61,26 +61,10 @@ export default function TypeControls() {
   }, []);
 
   useEffect(() => {
-    console.log(curKeys);
   }, [curKeys]);
 
   return (
     <>
-      <Box display="flex" justifyContent="center" alignItems="center" >
-        <Wrap width="500px" spacing="0px" overflow="hidden" translate="no">
-          {targetSentence.split("").map((letter, index) => {
-            return letter === " " ? (
-              <Text color="gray.100" >&nbsp;</Text>
-            ) : letter === curKeys[index] ? (
-              <Text color="gray.100" >{letter}</Text>
-            ) : curKeys[index] === undefined ? (
-              <Text color="gray.500" >{letter}</Text>
-            ) : (
-              <Text color="red.500" >{letter}</Text>
-            );
-          })}
-        </Wrap>
-      </Box>
       <Center height="100%">
         <div tabIndex={0} ref={inputRef}>
           <p>{curKeys}</p>
