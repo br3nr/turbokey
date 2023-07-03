@@ -1,0 +1,11 @@
+.wordWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  width: 600px;
+  align-items: center;
+}
+
+.wordWrapper span {
+  white-space: nowrap;
+  padding-right: 5px;
+}
