@@ -91,7 +91,6 @@ export default function TypeControls() {
     <>
       <Center height="100%">
         <div tabIndex={0} ref={inputRef}>
-          <p>{curKeys}</p>
         </div>
       </Center>
       <WordWrapper words={targetSentence.split(" ")} currentKey={curKeys} />

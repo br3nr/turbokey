@@ -12,7 +12,7 @@ const WordWrapper: React.FC<WordWrapperProps> = ({ words, currentKey }) => {
   const keyMatch = currentKey.toString().split(" ");
   return (
     <Center>
-      <Wrap width="500px">
+      <Wrap width="700px">
         {words.map((word, index) => (
             <Word targetWord={word} matchWord={keyMatch[index]} />
         ))}
