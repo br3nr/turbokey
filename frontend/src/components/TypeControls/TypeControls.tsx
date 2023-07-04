@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Wrap, Box, Center, Text, Input, AbsoluteCenter } from "@chakra-ui/react";
+import {
+  Wrap,
+  Box,
+  Center,
+  Text,
+  Input,
+  AbsoluteCenter,
+} from "@chakra-ui/react";
 import { generateWordList } from "@/utils/generateWordList";
 import Papa from "papaparse";
 import WordWrapper from "../WordWrapper/WordWrapper";
@@ -42,7 +49,21 @@ export default function TypeControls() {
       if (isAlphabetOrGrammar(event) && event.key.length === 1) {
         setCurKeys((prevList) => prevList + event.key);
       } else if (event.key === "Backspace") {
-        setCurKeys((prevList) => prevList.slice(0, -1));
+        
+        let curKeyList = curKeys.split(" ")
+        let targSentenceList = targetSentence.split(" ")
+        if((targSentenceList[curKeyList.length-2] === curKeyList[curKeyList.length-2]))
+        // Prevent user from backspacing to prev. word if it was correctly typed
+        {
+          if(curKeyList[curKeyList.length-1].length != 0)
+          {
+            setCurKeys((prevList) => prevList.slice(0, -1));
+          }
+        }
+        else
+        {
+          setCurKeys((prevList) => prevList.slice(0, -1));
+        }
       }
     };
 
@@ -58,9 +79,12 @@ export default function TypeControls() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [curKeys, targetSentence]);
 
   useEffect(() => {
+    let curKeyList = curKeys.split(" ")
+    let targSentenceList = targetSentence.split(" ")
+
   }, [curKeys]);
 
   return (
@@ -70,7 +94,7 @@ export default function TypeControls() {
           <p>{curKeys}</p>
         </div>
       </Center>
-      <WordWrapper words={targetSentence.split(" ")} currentKey={curKeys}/>
+      <WordWrapper words={targetSentence.split(" ")} currentKey={curKeys} />
     </>
   );
 }

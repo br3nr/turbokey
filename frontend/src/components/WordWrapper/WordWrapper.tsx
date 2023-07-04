@@ -10,7 +10,6 @@ interface WordWrapperProps {
 
 const WordWrapper: React.FC<WordWrapperProps> = ({ words, currentKey }) => {
   const keyMatch = currentKey.toString().split(" ");
-
   return (
     <Center>
       <Wrap width="500px">

@@ -9,8 +9,6 @@ interface WordProps {
 }
 
 const Word: React.FC<WordProps> = ({ targetWord, matchWord }) => {
-  console.log("matchword" + matchWord);
-
   return (
     <>
       <Box margin={[0, 2, 0, 2]}>
