@@ -18,12 +18,13 @@ const Word: React.FC<WordProps> = ({ targetWord, matchWord }) => {
   const [refWord, setRefWord] = useState<string>(targetWord);
 
   useEffect(() => {
+    console.log(targetWord)
     if (matchWord && matchWord.length > targetWord.length) {
       setRefWord(targetWord + matchWord.slice(targetWord.length));
     } else {
       setRefWord(targetWord);
     }
-  }, [matchWord]);
+  }, [matchWord, targetWord]);
 
   return (
     <>
