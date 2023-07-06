@@ -1,15 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Wrap,
-  Box,
-  Center,
-  Text,
-  Input,
-  AbsoluteCenter,
-} from "@chakra-ui/react";
+import { Center } from "@chakra-ui/react";
 import { generateWordList } from "@/utils/generateWordList";
-import Papa from "papaparse";
 import WordWrapper from "../WordWrapper/WordWrapper";
+
+interface WordObject {
+  targetWord: string;
+  typedWord: string;
+  isCorrect: boolean | null;
+}
 
 function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
   const alphabetOrGrammarRegex = /^[a-zA-Z0-9!-/:-@[-`{-~ ]+$/;
@@ -30,16 +28,37 @@ function getWordList(sentence: string): string[] {
   return wordList;
 }
 
+function getWords(sentence: string): WordObject[] {
+  const words = sentence.split(" ");
+  const wordList: WordObject[] = [];
+
+  for (let i = 0; i < words.length; i++) {
+    let wordObj: WordObject = {
+      targetWord: "",
+      typedWord: "",
+      isCorrect: null,
+    };
+    if (i !== words.length - 1) {
+      wordObj.targetWord = words[i] + " ";
+    } else {
+      wordObj.targetWord = words[i];
+    }
+    wordList.push(wordObj);
+  }
+  return wordList;
+}
+
 export default function TypeControls() {
   const [curKeys, setCurKeys] = useState<string>("");
   const [targetSentence, setTargetSentence] = useState<string>(""); // TODO: replace with words from backend
-  const wordList = getWordList(targetSentence);
+  const [wordList, setWordList] = useState<WordObject[]>([]);
   const inputRef = useRef(null);
 
   useEffect(() => {
     const getWordList = async () => {
       const sentence = await generateWordList();
       setTargetSentence(sentence);
+      const wordDict = setWordList(getWords(sentence));
     };
     getWordList();
   }, []);
@@ -49,19 +68,17 @@ export default function TypeControls() {
       if (isAlphabetOrGrammar(event) && event.key.length === 1) {
         setCurKeys((prevList) => prevList + event.key);
       } else if (event.key === "Backspace") {
-        
-        let curKeyList = curKeys.split(" ")
-        let targSentenceList = targetSentence.split(" ")
-        if((targSentenceList[curKeyList.length-2] === curKeyList[curKeyList.length-2]))
-        // Prevent user from backspacing to prev. word if it was correctly typed
-        {
-          if(curKeyList[curKeyList.length-1].length != 0)
-          {
+        let curKeyList = curKeys.split(" ");
+        let targSentenceList = targetSentence.split(" ");
+        if (
+          targSentenceList[curKeyList.length - 2] ===
+          curKeyList[curKeyList.length - 2]
+        ) {
+          // Prevent user from backspacing to prev. word if it was correctly typed
+          if (curKeyList[curKeyList.length - 1].length != 0) {
             setCurKeys((prevList) => prevList.slice(0, -1));
           }
-        }
-        else
-        {
+        } else {
           setCurKeys((prevList) => prevList.slice(0, -1));
         }
       }
@@ -79,19 +96,16 @@ export default function TypeControls() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [curKeys, targetSentence]);
+  }, [curKeys, targetSentence, wordList]);
 
   useEffect(() => {
-    let curKeyList = curKeys.split(" ")
-    let targSentenceList = targetSentence.split(" ")
-
-  }, [curKeys]);
+    console.log(wordList)
+  }, [wordList]);
 
   return (
     <>
       <Center height="100%">
-        <div tabIndex={0} ref={inputRef}>
-        </div>
+        <div tabIndex={0} ref={inputRef}></div>
       </Center>
       <WordWrapper words={targetSentence.split(" ")} currentKey={curKeys} />
     </>
