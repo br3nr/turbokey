@@ -31,11 +31,7 @@ const Word: React.FC<WordProps> = ({ targetWord, matchWord }) => {
       <Box margin={[0, 2, 0, 2]}>
         <div className={styles.word} style={robotoMono.style}>
           {refWord.split("").map((letter, index) => {
-            return letter === " " ? (
-              <span style={{ color: "red" }} key={index}>
-                {letter}
-              </span>
-            ) : index > targetWord.length - 1 ? (
+            return index > targetWord.length - 1 ? (
               <span style={{ color: "#8B0000" }} key={index}>
                 {letter}
               </span>
