@@ -10,39 +10,51 @@ import React from "react";
 const robotoMono = Roboto_Mono({ subsets: ["latin"] });
 
 interface WordProps {
-  targetWord: string;
-  matchWord: string;
+  word: WordObject;
 }
 
-const Word: React.FC<WordProps> = ({ targetWord, matchWord }) => {
-  const [refWord, setRefWord] = useState<string>(targetWord);
+interface WordObject {
+  targetWord: string;
+  typedWord: string;
+  isCorrect: boolean | null;
+  errors: number | null;
+}
+
+const Word: React.FC<WordProps> = ({ word }) => {
+  const [refWord, setRefWord] = useState<string>(word.targetWord);
 
   useEffect(() => {
-    if (matchWord && matchWord.length > targetWord.length) {
-      setRefWord(targetWord + matchWord.slice(targetWord.length));
+    // Render the refword to display overrun words
+    if (word.typedWord && word.typedWord.length > word.targetWord.length) {
+      setRefWord(
+        word.targetWord + word.typedWord.slice(word.targetWord.length)
+      );
     } else {
-      setRefWord(targetWord);
+      setRefWord(word.targetWord);
     }
-  }, [matchWord, targetWord]);
+  }, [word.typedWord, word.targetWord]);
 
   return (
     <>
       <Box margin={[0, 2, 0, 2]}>
-        <div className={styles.word} style={robotoMono.style}>
+        <div
+          className={word.isCorrect == false ? styles.error : styles.WordObject}
+          style={robotoMono.style}
+        >
           {refWord.split("").map((letter, index) => {
-            return index > targetWord.length - 1 ? (
+            return index > word.targetWord.length - 1 ? (
               <span style={{ color: "#8B0000" }} key={index}>
                 {letter}
               </span>
-            ) : matchWord == undefined ? (
+            ) : word.typedWord == undefined ? (
               <span style={{ color: "gray" }} key={index}>
                 {letter}
               </span>
-            ) : letter === matchWord[index] ? (
+            ) : letter === word.typedWord[index] ? (
               <span style={{ color: "white" }} key={index}>
                 {letter}
               </span>
-            ) : matchWord[index] == undefined ? (
+            ) : word.typedWord[index] == undefined ? (
               <span style={{ color: "gray" }} key={index}>
                 {letter}
               </span>

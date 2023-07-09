@@ -1,3 +1,8 @@
 .word { 
     font-size: large;
 }
+
+.error {
+    font-size: large;
+    border-bottom: 1px solid red;
+}

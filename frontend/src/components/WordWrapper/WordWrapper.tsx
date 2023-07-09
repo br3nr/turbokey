@@ -4,6 +4,7 @@ import { Text, Center, Box, Wrap } from "@chakra-ui/react";
 import Word from "../Word/Word";
 import { useEffect, useState } from "react";
 import { match } from "assert";
+
 interface WordWrapperProps {
   wordList: WordObject[];
 }
@@ -16,19 +17,12 @@ interface WordObject {
 }
 
 const WordWrapper: React.FC<WordWrapperProps> = ({ wordList }) => {
-  const [targetWords, setTargetWords] = useState<string[]>([]);
-  const [matchWords, setMatchWords] = useState<string[]>([]);
-
-  useEffect(() => {
-    setTargetWords(wordList.map((wordObject) => wordObject.targetWord));
-    setMatchWords(wordList.map((wordObject) => wordObject.typedWord));
-  }, [wordList]);
 
   return (
     <Center>
       <Wrap width="700px">
-        {targetWords.map((word, index) => (
-          <Word targetWord={word} matchWord={matchWords[index]} />
+        {wordList.map((w, index) => (
+          <Word key={index} word={w} />
         ))}
       </Wrap>
     </Center>
