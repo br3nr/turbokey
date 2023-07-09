@@ -56,7 +56,16 @@ export default function TypeControls() {
     setWordList((prevWordList) => {
       return prevWordList.map((word, index) => {
         if (index < curKeyArray.length) {
-          return { ...word, typedWord: curKeyArray[index] };
+          let correct = null;
+          if (index < curKeyArray.length - 1) {
+            // check if the previous word is missspelt
+            if (curKeyArray[index] === wordList[index].targetWord) {
+              correct = true;
+            } else {
+              correct = false;
+            }
+          }
+          return { ...word, typedWord: curKeyArray[index], isCorrect: correct };
         }
         return word;
       });
@@ -98,6 +107,7 @@ export default function TypeControls() {
     focusInput();
 
     document.addEventListener("keydown", handleKeyDown);
+    console.log(wordList);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
