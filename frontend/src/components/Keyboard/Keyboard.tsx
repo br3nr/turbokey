@@ -68,7 +68,7 @@ export default function Keyboard() {
           key={key.id}
           size={key.size}
           position={key.position}
-          colour={activeButtons.includes(key.id) ? "beige" : "hotpink"}
+          colour={activeButtons.includes(key.id) ? "gray" : "#dcdcdc"}
         />
       ))}
     </>

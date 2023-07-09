@@ -20,7 +20,7 @@ export default function Home() {
       <Box height="20vh">
         <TypeControls />
       </Box>
-      <Box height="80vh">
+      <Box marginTop="30px" height="50vh">
         <Scene />
       </Box>
     </>
