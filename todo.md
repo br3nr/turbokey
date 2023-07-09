@@ -5,3 +5,6 @@
     b. Words per minute
     b. Mistyped words
     c. Accuracy
+2. Visual feedback:
+    a. highlight incorrect words
+    

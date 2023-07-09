@@ -69,13 +69,13 @@ export default function TypeControls() {
       wordList[keyList.length - 2].targetWord ===
         wordList[keyList.length - 2].typedWord
     ) {
-      if (keyList[keyList.length - 1].length != 0) {
+      if (keyList[keyList.length - 1].length > 0) {
+        setTypedWords(curKeys.slice(0, -1));
         setCurKeys((prevList) => prevList.slice(0, -1));
-        setTypedWords(curKeys);
       }
     } else {
+      setTypedWords(curKeys.slice(0, -1));
       setCurKeys((prevList) => prevList.slice(0, -1));
-      setTypedWords(curKeys);
     }
   };
 
@@ -104,16 +104,12 @@ export default function TypeControls() {
     };
   }, [curKeys, targetSentence, wordList]);
 
-  useEffect(() => {
-    console.log(wordList);
-  }, [wordList]);
-
   return (
     <>
       <Center height="100%">
         <div tabIndex={0} ref={inputRef}></div>
       </Center>
-      <WordWrapper words={targetSentence.split(" ")} currentKey={curKeys} />
+      <WordWrapper wordList={wordList} />
     </>
   );
 }
