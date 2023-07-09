@@ -20,7 +20,7 @@ const WordWrapper: React.FC<WordWrapperProps> = ({ wordList }) => {
 
   return (
     <Center>
-      <Wrap width="700px">
+      <Wrap width="800px">
         {wordList.map((w, index) => (
           <Word key={index} word={w} />
         ))}

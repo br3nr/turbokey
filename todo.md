@@ -6,5 +6,6 @@
     b. Mistyped words
     c. Accuracy
 2. Visual feedback:
-    a. highlight incorrect words
+    a. ~~highlight incorrect words~~
+    b. cursor 
     

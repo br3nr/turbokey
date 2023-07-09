@@ -36,7 +36,7 @@ const Word: React.FC<WordProps> = ({ word }) => {
 
   return (
     <>
-      <Box margin={[0, 2, 0, 2]}>
+      <Box margin={[0, 1, 0, 1]}>
         <div
           className={word.isCorrect == false ? styles.error : styles.WordObject}
           style={robotoMono.style}
