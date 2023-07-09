@@ -7,25 +7,12 @@ interface WordObject {
   targetWord: string;
   typedWord: string;
   isCorrect: boolean | null;
+  errors: number | null;
 }
 
 function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
   const alphabetOrGrammarRegex = /^[a-zA-Z0-9!-/:-@[-`{-~ ]+$/;
   return alphabetOrGrammarRegex.test(event.key);
-}
-
-function getWordList(sentence: string): string[] {
-  const words = sentence.split(" ");
-  const wordList: string[] = [];
-
-  for (let i = 0; i < words.length; i++) {
-    if (i != words.length - 1) {
-      wordList[i] = words[i] + " ";
-    } else {
-      wordList[i] = words[i];
-    }
-  }
-  return wordList;
 }
 
 function getWords(sentence: string): WordObject[] {
@@ -37,9 +24,10 @@ function getWords(sentence: string): WordObject[] {
       targetWord: "",
       typedWord: "",
       isCorrect: null,
+      errors: null,
     };
     if (i !== words.length - 1) {
-      wordObj.targetWord = words[i] + " ";
+      wordObj.targetWord = words[i];
     } else {
       wordObj.targetWord = words[i];
     }
@@ -58,29 +46,47 @@ export default function TypeControls() {
     const getWordList = async () => {
       const sentence = await generateWordList();
       setTargetSentence(sentence);
-      const wordDict = setWordList(getWords(sentence));
+      setWordList(getWords(sentence));
     };
     getWordList();
   }, []);
+
+  const setTypedWords = (keyList: string) => {
+    const curKeyArray = keyList.split(" ");
+    setWordList((prevWordList) => {
+      return prevWordList.map((word, index) => {
+        if (index < curKeyArray.length) {
+          return { ...word, typedWord: curKeyArray[index] };
+        }
+        return word;
+      });
+    });
+  };
+
+  const handleBackSpace = (keyList: string[]) => {
+    if (
+      wordList[keyList.length - 2] &&
+      wordList[keyList.length - 2].targetWord ===
+        wordList[keyList.length - 2].typedWord
+    ) {
+      if (keyList[keyList.length - 1].length != 0) {
+        setCurKeys((prevList) => prevList.slice(0, -1));
+        setTypedWords(curKeys);
+      }
+    } else {
+      setCurKeys((prevList) => prevList.slice(0, -1));
+      setTypedWords(curKeys);
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (isAlphabetOrGrammar(event) && event.key.length === 1) {
         setCurKeys((prevList) => prevList + event.key);
+        setTypedWords(curKeys + event.key);
       } else if (event.key === "Backspace") {
         let curKeyList = curKeys.split(" ");
-        let targSentenceList = targetSentence.split(" ");
-        if (
-          targSentenceList[curKeyList.length - 2] ===
-          curKeyList[curKeyList.length - 2]
-        ) {
-          // Prevent user from backspacing to prev. word if it was correctly typed
-          if (curKeyList[curKeyList.length - 1].length != 0) {
-            setCurKeys((prevList) => prevList.slice(0, -1));
-          }
-        } else {
-          setCurKeys((prevList) => prevList.slice(0, -1));
-        }
+        handleBackSpace(curKeyList);
       }
     };
 
@@ -99,7 +105,7 @@ export default function TypeControls() {
   }, [curKeys, targetSentence, wordList]);
 
   useEffect(() => {
-    console.log(wordList)
+    console.log(wordList);
   }, [wordList]);
 
   return (
