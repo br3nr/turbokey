@@ -19,7 +19,7 @@ const WordWrapper: React.FC<WordWrapperProps> = ({ wordList }) => {
 
   const checkIsFinalWord = (word: WordObject, index: number) =>
   {
-    if(wordList[index+1] == undefined || wordList[index+1].isCorrect == null)
+    if(wordList[index+1] && wordList[index+1].isCorrect == null)
     {
       return true;
     }

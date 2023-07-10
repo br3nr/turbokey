@@ -23,6 +23,12 @@ interface WordObject {
 
 const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
   const [refWord, setRefWord] = useState<string>(word.targetWord);
+
+  if(isFinalWord)
+  {
+    console.log(word)
+  }
+
   useEffect(() => {
     // Render the refword to display overrun words
     if (word.typedWord && word.typedWord.length > word.targetWord.length) {
@@ -55,6 +61,7 @@ const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
                 <span style={{ color: "white" }} key={index}>
                   {letter}
                 </span>
+                { isFinalWord && index == word.typedWord.length-1 ? (<span className={styles.caret}></span>):(<></>) }
               </>
             ) : word.typedWord[index] == undefined ? (
               <span style={{ color: "gray" }} key={index}>

@@ -107,7 +107,8 @@ export default function TypeControls() {
     focusInput();
 
     document.addEventListener("keydown", handleKeyDown);
-    console.log(wordList);
+
+    console.log(wordList)
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
