@@ -11,6 +11,7 @@ const robotoMono = Roboto_Mono({ subsets: ["latin"] });
 
 interface WordProps {
   word: WordObject;
+  isFinalWord: boolean;
 }
 
 interface WordObject {
@@ -20,9 +21,8 @@ interface WordObject {
   errors: number | null;
 }
 
-const Word: React.FC<WordProps> = ({ word }) => {
+const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
   const [refWord, setRefWord] = useState<string>(word.targetWord);
-
   useEffect(() => {
     // Render the refword to display overrun words
     if (word.typedWord && word.typedWord.length > word.targetWord.length) {
@@ -51,9 +51,11 @@ const Word: React.FC<WordProps> = ({ word }) => {
                 {letter}
               </span>
             ) : letter === word.typedWord[index] ? (
-              <span style={{ color: "white" }} key={index}>
-                {letter}
-              </span>
+              <>
+                <span style={{ color: "white" }} key={index}>
+                  {letter}
+                </span>
+              </>
             ) : word.typedWord[index] == undefined ? (
               <span style={{ color: "gray" }} key={index}>
                 {letter}

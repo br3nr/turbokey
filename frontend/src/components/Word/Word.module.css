@@ -1,7 +1,25 @@
-.word { 
-    font-size: large;
+.word {
+  font-size: large;
 }
 
 .error {
-    border-bottom: 1px solid red;
+  border-bottom: 1px solid red;
+}
+
+.caret {
+  position: absolute;
+  width: 2px;
+  background-color: red;
+  animation: blink-caret 0.8s infinite;
+  height: 18px;
+}
+
+@keyframes blink-caret {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }
