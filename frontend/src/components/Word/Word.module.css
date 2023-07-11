@@ -9,9 +9,10 @@
 .caret {
   position: absolute;
   width: 2px;
-  background-color: red;
-  animation: blink-caret 0.8s infinite;
-  height: 18px;
+  margin-top: 3px;
+  background-color: magenta;
+  animation: blink-caret 1.0s infinite;
+  height: 20px;
 }
 
 @keyframes blink-caret {
