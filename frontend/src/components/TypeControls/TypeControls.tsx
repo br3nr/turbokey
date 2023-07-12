@@ -41,6 +41,17 @@ export default function TypeControls() {
   const [targetSentence, setTargetSentence] = useState<string>(""); // TODO: replace with words from backend
   const [wordList, setWordList] = useState<WordObject[]>([]);
   const inputRef = useRef(null);
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setSeconds((prevSeconds) => prevSeconds + 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
 
   useEffect(() => {
     const getWordList = async () => {
@@ -108,7 +119,7 @@ export default function TypeControls() {
 
     document.addEventListener("keydown", handleKeyDown);
 
-    console.log(wordList)
+    console.log(wordList);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
@@ -118,6 +129,7 @@ export default function TypeControls() {
   return (
     <>
       <Center height="100%">
+        <div>{seconds}</div>
         <div tabIndex={0} ref={inputRef}></div>
       </Center>
       <WordWrapper wordList={wordList} />
