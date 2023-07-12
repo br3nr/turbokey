@@ -4,6 +4,7 @@ import { Text, Center, Box, Wrap } from "@chakra-ui/react";
 import Word from "../Word/Word";
 import { useEffect, useState } from "react";
 import { match } from "assert";
+
 interface WordWrapperProps {
   wordList: WordObject[];
 }

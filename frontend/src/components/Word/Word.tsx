@@ -3,11 +3,8 @@ import { OrbitControls } from "@react-three/drei";
 import Keyboard from "../Keyboard/Keyboard";
 import { Text, Box } from "@chakra-ui/react";
 import styles from "./Word.module.css";
-import { Roboto_Mono } from "next/font/google";
 import { useEffect, useState } from "react";
 import React from "react";
-
-const robotoMono = Roboto_Mono({ subsets: ["latin"] });
 
 interface WordProps {
   word: WordObject;
@@ -44,7 +41,6 @@ const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
       <Box margin={[0, 1, 0, 1]}>
         <div
           className={word.isCorrect == false ? styles.error : styles.WordObject}
-          style={robotoMono.style}
         >
           <div>
             {isFinalWord && word.typedWord == "" ? (
