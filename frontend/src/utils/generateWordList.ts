@@ -1,7 +1,7 @@
 import Papa from "papaparse";
 
 export async function generateWordList(): Promise<string> {
-  const response = await fetch("/wordlist/wordlist.csv");
+  const response = await fetch("/wordlist/monkey.csv");
   const data = await response.text();
 
   const parsedData = Papa.parse(data, { header: true }).data;
