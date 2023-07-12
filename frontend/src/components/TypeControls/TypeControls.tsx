@@ -42,6 +42,27 @@ export default function TypeControls() {
   const [wordList, setWordList] = useState<WordObject[]>([]);
   const inputRef = useRef(null);
   const [seconds, setSeconds] = useState(0);
+  const [wpm, setWpm] = useState<number>(0);
+
+  const calcWordPerMin = (words: WordObject[]) => {
+    if (words.length === 0) {
+      return; // Exit early if wordList is empty
+    }
+
+    let wordCount: number = 0;
+
+    for (let i = 0; i < words.length; i++) {
+      if (words[i].isCorrect === true) {
+        wordCount = wordCount + 1;
+      }
+    }
+
+    setWpm(Math.floor((wordCount / seconds) * 60));
+  };
+
+  useEffect(() => {
+    calcWordPerMin(wordList);
+  }, [seconds]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -119,8 +140,6 @@ export default function TypeControls() {
 
     document.addEventListener("keydown", handleKeyDown);
 
-    console.log(wordList);
-
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -128,9 +147,10 @@ export default function TypeControls() {
 
   return (
     <>
-      <Center height="100%">
-        <div>{seconds}</div>
+      <Center height="100%" display="flex" flexDirection="column">
         <div tabIndex={0} ref={inputRef}></div>
+        <div>Time: {seconds}</div>
+        <div>Words per minute: {wpm}</div>
       </Center>
       <WordWrapper wordList={wordList} />
     </>

@@ -21,10 +21,6 @@ interface WordObject {
 const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
   const [refWord, setRefWord] = useState<string>(word.targetWord);
 
-  if (isFinalWord) {
-    console.log(word);
-  }
-
   useEffect(() => {
     // Render the refword to display overrun words
     if (word.typedWord && word.typedWord.length > word.targetWord.length) {
