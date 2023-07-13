@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Center } from "@chakra-ui/react";
 import { generateWordList } from "@/utils/generateWordList";
 import WordWrapper from "../WordWrapper/WordWrapper";
+import styles from "./TypeControls.module.css";
 
 interface WordObject {
   targetWord: string;
@@ -152,7 +153,12 @@ export default function TypeControls() {
         <div>Time: {seconds}</div>
         <div>Words per minute: {wpm}</div>
       </Center>
-      <WordWrapper wordList={wordList} />
+      <div className={styles.container}>
+        <div className={styles.blur}>
+          <WordWrapper wordList={wordList} />
+        </div>
+        <button className={styles.overlayButton}>Click to Start</button>
+      </div>
     </>
   );
 }

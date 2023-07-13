@@ -44,8 +44,6 @@ const WordWrapper: React.FC<WordWrapperProps> = ({ wordList }) => {
 
   return (
     <Center>
-      <div className={styles.container}>
-        <div className={styles.blur}>
           <Wrap width="800px">
             {wordList.map((w, index) => (
               <Word
@@ -55,9 +53,6 @@ const WordWrapper: React.FC<WordWrapperProps> = ({ wordList }) => {
               />
             ))}
           </Wrap>
-        </div>
-        <button className={styles.overlayButton}>Click to Start</button>
-      </div>
     </Center>
   );
 };

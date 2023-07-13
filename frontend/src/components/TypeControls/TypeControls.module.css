@@ -1,0 +1,23 @@
+.blur {
+  filter: blur(3px);
+}
+
+.container {
+  position: relative;
+}
+
+.overlayButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: 4px;
+  border-radius: 8px;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  transition-duration: 0.4s;
+}
+
+.overlayButton:hover {
+  background-color: rgba(200, 200, 200, 0.219); /* Green */
+  color: white;
+}
