@@ -45,6 +45,7 @@ export default function TypeControls() {
   const [seconds, setSeconds] = useState(0);
   const [wpm, setWpm] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [hasTyped, setHasTyped] = useState<boolean>(false);
 
   const calcWordPerMin = (words: WordObject[]) => {
     if (words.length === 0) {
@@ -72,7 +73,7 @@ export default function TypeControls() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (gameStarted) {
+      if (gameStarted && hasTyped) {
         setSeconds((prevSeconds) => prevSeconds + 1);
       }
     }, 1000);
@@ -80,7 +81,7 @@ export default function TypeControls() {
     return () => {
       clearInterval(intervalId);
     };
-  }, [gameStarted]);
+  }, [gameStarted, hasTyped]);
 
   useEffect(() => {
     const getWordList = async () => {
@@ -131,6 +132,7 @@ export default function TypeControls() {
   useEffect(() => {
     if (gameStarted) {
       const handleKeyDown = (event: KeyboardEvent) => {
+        setHasTyped(true);
         if (isAlphabetOrGrammar(event) && event.key.length === 1) {
           setCurKeys((prevList) => prevList + event.key);
           setTypedWords(curKeys + event.key);
