@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Center } from "@chakra-ui/react";
 import { generateWordList } from "@/utils/generateWordList";
 import WordWrapper from "../WordWrapper/WordWrapper";
 import styles from "./TypeControls.module.css";
@@ -152,10 +151,10 @@ export default function TypeControls() {
 
   return (
     <>
-      <Center height="100%" display="flex" flexDirection="column">
+      <div className={styles.center}>
         <div>Time: {seconds}</div>
         <div>Words per minute: {wpm}</div>
-      </Center>
+      </div>
       <div className={styles.container}>
         <div className={!gameStarted ? styles.blur : ""}>
           <WordWrapper wordList={wordList} />

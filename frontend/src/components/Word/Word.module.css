@@ -2,6 +2,11 @@
   font-size: large;
 }
 
+.wordContainer {
+  margin: 0 5px 0 5px;
+  box-sizing: border-box;
+}
+
 .error {
   border-bottom: 1px solid red;
 }

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Box, Center, Text } from "@chakra-ui/react";
+import styles from "./page.module.css";
 import Scene from "../components/Scene/Scene";
 import TypeControls from "../components/TypeControls/TypeControls";
 import { Roboto_Mono } from "next/font/google";
@@ -10,13 +10,13 @@ const robotoMono = Roboto_Mono({ subsets: ["latin"] });
 export default function Home() {
   return (
     <>
-      <div style={robotoMono.style}>
-        <Box height="20vh">
+      <div className={styles.typeDiv} style={robotoMono.style}>
+        <div>
           <TypeControls />
-        </Box>
-        <Box marginTop="30px" height="50vh">
+        </div>
+        <div className={styles.sceneDiv}>
           <Scene />
-        </Box>
+        </div>
       </div>
     </>
   );

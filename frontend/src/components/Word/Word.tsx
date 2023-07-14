@@ -1,7 +1,3 @@
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import Keyboard from "../Keyboard/Keyboard";
-import { Text, Box } from "@chakra-ui/react";
 import styles from "./Word.module.css";
 import { useEffect, useState } from "react";
 import React from "react";
@@ -34,7 +30,7 @@ const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
 
   return (
     <>
-      <Box margin={[0, 1, 0, 1]}>
+      <div className={styles.wordContainer}>
         <div
           className={word.isCorrect == false ? styles.error : styles.WordObject}
         >
@@ -95,7 +91,7 @@ const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
             })}
           </div>
         </div>
-      </Box>
+      </div>
     </>
   );
 };

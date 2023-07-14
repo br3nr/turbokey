@@ -9,3 +9,16 @@
   white-space: nowrap;
   padding-right: 5px;
 }
+
+.wrap {
+  display: inline-flex;
+  flex-wrap: wrap;
+  width: 800px;
+  gap: 4px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

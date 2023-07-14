@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./WordWrapper.module.css";
-import { Text, Center, Box, Wrap } from "@chakra-ui/react";
 import Word from "../Word/Word";
 import { useEffect, useState } from "react";
 import { match } from "assert";
@@ -43,8 +42,8 @@ const WordWrapper: React.FC<WordWrapperProps> = ({ wordList }) => {
   };
 
   return (
-    <Center>
-          <Wrap width="800px">
+    <div className={styles.center}>
+          <div className={styles.wrap}>
             {wordList.map((w, index) => (
               <Word
                 key={index}
@@ -52,8 +51,8 @@ const WordWrapper: React.FC<WordWrapperProps> = ({ wordList }) => {
                 isFinalWord={checkIsFinalWord(w, index)}
               />
             ))}
-          </Wrap>
-    </Center>
+          </div>
+    </div>
   );
 };
 
