@@ -44,6 +44,7 @@ export default function TypeControls() {
   const inputRef = useRef(null);
   const [seconds, setSeconds] = useState(0);
   const [wpm, setWpm] = useState<number>(0);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
 
   const calcWordPerMin = (words: WordObject[]) => {
     if (words.length === 0) {
@@ -61,19 +62,25 @@ export default function TypeControls() {
     setWpm(Math.floor((wordCount / seconds) * 60));
   };
 
+  const startGame = () => {
+    setGameStarted(true);
+  };
+
   useEffect(() => {
     calcWordPerMin(wordList);
   }, [seconds]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setSeconds((prevSeconds) => prevSeconds + 1);
+      if (gameStarted) {
+        setSeconds((prevSeconds) => prevSeconds + 1);
+      }
     }, 1000);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [gameStarted]);
 
   useEffect(() => {
     const getWordList = async () => {
@@ -122,42 +129,42 @@ export default function TypeControls() {
   };
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (isAlphabetOrGrammar(event) && event.key.length === 1) {
-        setCurKeys((prevList) => prevList + event.key);
-        setTypedWords(curKeys + event.key);
-      } else if (event.key === "Backspace") {
-        let curKeyList = curKeys.split(" ");
-        handleBackSpace(curKeyList);
-      }
-    };
+    if (gameStarted) {
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (isAlphabetOrGrammar(event) && event.key.length === 1) {
+          setCurKeys((prevList) => prevList + event.key);
+          setTypedWords(curKeys + event.key);
+        } else if (event.key === "Backspace") {
+          let curKeyList = curKeys.split(" ");
+          handleBackSpace(curKeyList);
+        }
+      };
 
-    const focusInput = () => {
-      //@ts-ignore
-      inputRef.current.focus(); // use ref issue, fix later
-    };
+      document.addEventListener("keydown", handleKeyDown);
 
-    focusInput();
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [curKeys, targetSentence, wordList]);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [curKeys, targetSentence, wordList, gameStarted]);
 
   return (
     <>
       <Center height="100%" display="flex" flexDirection="column">
-        <div tabIndex={0} ref={inputRef}></div>
         <div>Time: {seconds}</div>
         <div>Words per minute: {wpm}</div>
       </Center>
       <div className={styles.container}>
-        <div className={styles.blur}>
+        <div className={!gameStarted ? styles.blur : ""}>
           <WordWrapper wordList={wordList} />
         </div>
-        <button className={styles.overlayButton}>Click to Start</button>
+        {!gameStarted ? (
+          <button onClick={startGame} className={styles.overlayButton}>
+            Click to Start
+          </button>
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );
