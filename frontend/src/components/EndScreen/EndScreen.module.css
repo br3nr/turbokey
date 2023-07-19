@@ -8,6 +8,6 @@
     width: 1200px;
     height: 700px;
     transform: translate(-50%, -50%); /* move the element back by half its width and height */
-    background-color: var(--primary-color);
+    background-color: red;
   }
   
