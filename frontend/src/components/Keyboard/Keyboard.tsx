@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import Key from "../Key/Key";
 
 export default function Keyboard() {
@@ -8,6 +9,7 @@ export default function Keyboard() {
   const bottomRow = ["Z", "X", "C", "V", "B", "N", "M"];
   const [activeButtons, setActiveButtons] = useState<string[]>([]);
   const keyDat = [];
+  const { theme, setTheme } = useTheme();
 
   for (let i = 0; i < topRow.length; i++) {
     keyDat.push({ id: topRow[i], position: [-8.4 + i * 2, 0, 0], size: "1u" });
@@ -68,7 +70,7 @@ export default function Keyboard() {
           key={key.id}
           size={key.size}
           position={key.position}
-          colour={activeButtons.includes(key.id) ? "gray" : "#dcdcdc"}
+          colour={activeButtons.includes(key.id) ?  (theme === "dark" ? "#7800ff" : "#9d46ff") : (theme === "dark" ? "white" : "#414141")}
         />
       ))}
     </>

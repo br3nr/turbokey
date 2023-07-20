@@ -1,6 +1,7 @@
 import styles from "./Word.module.css";
 import { useEffect, useState } from "react";
 import React from "react";
+import { useTheme } from "next-themes";
 
 interface WordProps {
   word: WordObject;
@@ -15,6 +16,7 @@ interface WordObject {
 }
 
 const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
+  const { theme, setTheme } = useTheme();
   const [refWord, setRefWord] = useState<string>(word.targetWord);
 
   useEffect(() => {
@@ -58,13 +60,13 @@ const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
                       </>
                     ) : letter === word.typedWord[index] ? (
                       <>
-                        <span style={{ color: "white" }} key={index}>
+                        <span className={`text-${theme}-primary`} key={index}>
                           {letter}
                         </span>
                       </>
                     ) : word.typedWord[index] == undefined ? (
                       <>
-                        <span style={{ color: "gray" }} key={index}>
+                        <span className="text-gray-500" key={index}>
                           {letter}
                         </span>
                       </>
