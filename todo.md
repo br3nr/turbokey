@@ -8,4 +8,5 @@
 2. Visual feedback:
     a. ~~highlight incorrect words~~
     b. cursor 
-    
+3. Misc
+    a. Read this: https://nextjs.org/docs/getting-started/react-essentials#composing-client-and-server-components

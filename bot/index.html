@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Discord OAuth2</title>
+  </head>
+  <body>
+    <div id="info">Loading user information...</div>
+    <script>
+      window.onload = () => {
+        // Extract the authorization code from the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get("code");
+
+        // If there's no authorization code, display an error message
+        if (!code) {
+          document.getElementById("info").innerText =
+            "Error: No authorization code found in the URL.";
+          return;
+        }
+
+        // Fetch the access token using the authorization code
+        fetch("https://discord.com/api/oauth2/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `client_id=1124947743190814740&client_secret=SHH&grant_type=authorization_code&code=${code}&redirect_uri=http://localhost:8000/`,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const accessToken = data.access_token;
+
+            // Fetch the user data from the Discord API using the access token
+            fetch("https://discord.com/api/users/@me", {
+              headers: {
+                authorization: `Bearer ${accessToken}`,
+              },
+            })
+              .then((result) => result.json())
+              .then((response) => {
+                const { username, discriminator } = response;
+
+                // Update the "info" div with the user's information
+                document.getElementById(
+                  "info"
+                ).innerText = `Hello, ${username}#${discriminator}!`;
+              })
+              .catch((error) => {
+                document.getElementById("info").innerText =
+                  "Failed to fetch user information.";
+                console.error(error);
+              });
+          })
+          .catch((error) => {
+            document.getElementById("info").innerText =
+              "Failed to fetch access token.";
+            console.error(error);
+          });
+      };
+    </script>
+  </body>
+</html>
