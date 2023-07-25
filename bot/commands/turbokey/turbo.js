@@ -5,6 +5,6 @@ module.exports = {
 		.setName('turbo')
 		.setDescription('Replies with the TurboKey URL.'),
 	async execute(interaction) {
-		await interaction.reply('https://www.lingscars.com/');
+		await interaction.reply('http://localhost:3000/login');
 	},
 };
