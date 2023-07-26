@@ -15,8 +15,8 @@ registerCommands(client);
 const app = express();
 
 app.get("/", async (req, res) => {
-  const client_id = "1124947743190814740"; 
-  const client_secret = "";
+  const client_id = ""; 
+  const client_secret = "CLrp3rcoGpHgNgLxglk4CQDmr3EHInfu";
   const redirect_uri = "http://localhost:8000/";
   const code = req.query.code;
   fetch("https://discord.com/api/oauth2/token", {
@@ -39,7 +39,9 @@ app.get("/", async (req, res) => {
         .then((result) => result.json())
         .then((response) => {
           const { username } = response;
-          res.send(`Hello ${username}`);
+          console.log(username)
+          res.cookie("username", username);
+          res.redirect(`http://localhost:3000/profile`);
         })
         .catch((error) => {
           console.error(error);
@@ -48,7 +50,7 @@ app.get("/", async (req, res) => {
     .catch((error) => {
       console.error(error);
     });
-
+    
 
 });
 
