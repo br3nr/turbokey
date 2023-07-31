@@ -33,10 +33,12 @@ app.get("/login", (req, res) => {
 app.get("/checkSession", function (req, res) {
   // print every cookie in the session containing userID
   console.log(req.session.userId);
+  res.send("Session checked, username is " + req.session.userId);
+
 });
 
 app.get("/", async (req, res) => {
-  const client_id = "";
+  const client_id = "1124947743190814740";
   const client_secret = "CLrp3rcoGpHgNgLxglk4CQDmr3EHInfu";
   const redirect_uri = "http://localhost:8000/";
   const code = req.query.code;

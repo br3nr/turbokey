@@ -11,20 +11,20 @@ const ThemeChanger = () => {
   if (!hasMounted) return null;
 
   return (
-    <div className="flex justify-center items-center">
-      <button
-        className="text-1xl font-bold p-5"
-        onClick={() => setTheme("light")}
-      >
-        Light
-      </button>
-      <button
-        className="text-1xl font-bold p-5"
-        onClick={() => setTheme("dark")}
-      >
-        Dark
-      </button>
-    </div>
+      <div className="flex justify-center items-center space-x-5">
+        <button
+          className="text-1xl font-bold"
+          onClick={() => setTheme("light")}
+        >
+          Light
+        </button>
+        <button
+          className="text-1xl font-bold"
+          onClick={() => setTheme("dark")}
+        >
+          Dark
+        </button>
+      </div>
   );
 };
 
