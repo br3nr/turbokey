@@ -21,6 +21,7 @@ app = FastAPI(debug=True)
 auth_router = AuthRouter(BOT_TOKEN, BOT_CLIENT_SECRET, REDIRECT_URI, REDIRECT_LOC)
 app.include_router(auth_router, tags=["auth"])
 
+
 @app.middleware("http")
 async def authenticate_request(request, call_next):
     if request.url.path.startswith("/auth"):
@@ -51,6 +52,11 @@ async def root():
 @app.get("/auth/")
 async def auth():
     return {"message": "Hello from Auth!"}
+
+
+@bot.tree.command()
+async def turbo(ctx: discord.Interaction):
+    await ctx.response.send_message("http://localhost:3000/")
 
 
 async def run():
