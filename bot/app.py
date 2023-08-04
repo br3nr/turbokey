@@ -1,8 +1,9 @@
 import asyncio
 import discord
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from discord.ext import commands
 from dotenv import load_dotenv
 from src.session.session_manager import SessionManager
@@ -20,6 +21,18 @@ app = FastAPI(debug=True)
 
 auth_router = AuthRouter(BOT_TOKEN, BOT_CLIENT_SECRET, REDIRECT_URI, REDIRECT_LOC)
 app.include_router(auth_router, tags=["auth"])
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 
 @app.middleware("http")
