@@ -13,13 +13,18 @@ const robotoMono = Roboto_Mono({ subsets: ["latin"] });
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  
+
   useEffect(() => {
-    if (!localStorage.getItem("session_id")) {
-      router.push("/login");
-    } else {
-      setLoading(false);
-    }
+    const fetchUserData = async () => {
+      const response = await fetch("http://localhost:8000/auth/login", { credentials: "include" });
+      if (response.status === 401) {
+        router.push("/login");
+      } else {
+        setLoading(false);
+        console.log(await response.json());
+      }
+    };
+    fetchUserData();
   }, [loading]);
 
   return (
