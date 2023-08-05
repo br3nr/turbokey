@@ -52,13 +52,14 @@ class AuthRouter(APIRouter):
         session_id = session_manager.create_session(user)
 
         response = RedirectResponse(self.redirect_loc)
-        response.set_cookie("session_id", session_id)
+        response.set_cookie("session_id", session_id, httponly=True)
         return response
 
     async def login(self, response: Response, request: Request):
         session_manager = SessionManager.get_instance()
         session_id = request.cookies.get("session_id")
-        if session_manager.is_authenticated(session_id):
+
+        if session_id and session_manager.is_authenticated(session_id):
             user = session_manager.get_user(session_id)
             return JSONResponse(content=user)
 

@@ -10,10 +10,11 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       // check if cookie exists
-      const userName = Cookies.get("username");
-      if (userName) {
-        setUser(userName);
-      }
+      const cookie = Cookies.get();
+      console.log(cookie);
+      const response = await fetch("http://localhost:8000/auth/login", { credentials: 'include' });
+      const data = await response.json();
+      console.log(data);
     };
 		fetchData();
   }, []);
