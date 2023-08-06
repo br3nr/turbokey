@@ -20,7 +20,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="flex h-screen">
+    <div>
       <div className="m-auto">
         <h3>Welcome {user}. You are now logged in.</h3>
       </div>
