@@ -3,12 +3,10 @@ import React from "react";
 import styles from "./page.module.css";
 import Scene from "../components/Scene/Scene";
 import TypeControls from "../components/TypeControls/TypeControls";
-import { Roboto_Mono } from "next/font/google";
 import ThemeChanger from "@/components/ThemeChanger/ThemeChanger";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const robotoMono = Roboto_Mono({ subsets: ["latin"] });
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -32,7 +30,7 @@ export default function Home() {
       {loading ? (
         <></>
       ) : (
-        <div className={styles.typeDiv} style={robotoMono.style}>
+        <div className={styles.typeDiv} >
           <div>
             <ThemeChanger />
 

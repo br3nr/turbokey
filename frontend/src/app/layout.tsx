@@ -5,6 +5,10 @@ import Providers from "./Providers";
 import Navbar from "../components/Navbar/Navbar";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Roboto_Mono } from "next/font/google";
+
+const robotoMono = Roboto_Mono({ subsets: ["latin"] });
+
 
 export default function RootLayout({
   children,
@@ -34,7 +38,7 @@ export default function RootLayout({
   const pathname = usePathname();
   return (
     <html lang="en">
-      <body>
+      <body style={robotoMono.style}>
         {pathname !== "/login" ? (
           <Navbar username={username} avatar={avatar} />
         ) : (
