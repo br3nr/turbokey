@@ -70,7 +70,7 @@ export default function Keyboard() {
           key={key.id}
           size={key.size}
           position={key.position}
-          colour={activeButtons.includes(key.id) ?  (theme === "dark" ? "#7800ff" : "#9d46ff") : (theme === "dark" ? "white" : "#414141")}
+          colour={activeButtons.includes(key.id) ?  (theme === "dark" ? "#9d4edd" : "#9d4edd") : (theme === "dark" ? "white" : "#414141")}
         />
       ))}
     </>
