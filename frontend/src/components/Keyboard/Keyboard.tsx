@@ -54,7 +54,7 @@ export default function Keyboard() {
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
+    document.addEventListen\\\\\\\\\\\\\\\\\\\er("keyup", handleKeyUp);
 
     // Clean up event listeners on component unmount
     return () => {

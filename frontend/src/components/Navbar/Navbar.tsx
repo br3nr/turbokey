@@ -43,16 +43,18 @@ export default function Navbar(props: ProfileProps) {
         </Canvas>
       </div>
       <div className="flex items-center ml-auto">
-        <Image
-          src={props.avatar}
-          width={40}
-          height={40}
-          className="border-2 border-white rounded-full"
-          alt="Avatar"
-          onClick={() => {
-            router.push("/profile");
-          }}
-        />
+        <div className="transition duration-300 ease-in-out transform hover:brightness-75">
+          <Image
+            src={props.avatar}
+            width={40}
+            height={40}
+            className="border-2 border-white rounded-full"
+            alt="Avatar"
+            onClick={() => {
+              router.push("/profile");
+            }}
+          />
+        </div>
       </div>
     </div>
   );
