@@ -141,6 +141,14 @@ export default function TypeControls() {
         }
       };
 
+      const targetWordArr: string[] = [];
+      const typedWordArr: string[] = [];
+
+      wordList.forEach(obj => {
+        targetWordArr.push(obj.targetWord);
+        typedWordArr.push(obj.typedWord);
+      });
+
       document.addEventListener("keydown", handleKeyDown);
 
       return () => {
@@ -168,5 +176,4 @@ export default function TypeControls() {
         )}
       </div>
     </>
-  );
-}
+  );}
