@@ -68,7 +68,7 @@ const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
                       <>
                         <span className="text-gray-500" key={index}>
                           {letter}
-                        </span>
+                        </span> 
                       </>
                     ) : word.typedWord === "" ? (
                       <>
@@ -83,7 +83,7 @@ const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {
                     )}
                   </>
                   <></>
-                  {isFinalWord && index == word.typedWord.length - 1 ? (
+                  {isFinalWord && word.typedWord && index == word.typedWord.length - 1 ? (
                     <span className={styles.caret}></span>
                   ) : (
                     <></>

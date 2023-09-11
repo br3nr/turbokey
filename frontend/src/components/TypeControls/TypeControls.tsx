@@ -7,7 +7,8 @@ interface WordObject {
   targetWord: string;
   typedWord: string;
   isCorrect: boolean | null;
-  errors: number | null;
+  attempted: boolean;
+  errors: number;
 }
 
 function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
@@ -24,7 +25,8 @@ function getWords(sentence: string): WordObject[] {
       targetWord: "",
       typedWord: "",
       isCorrect: null,
-      errors: null,
+      attempted: false,
+      errors: 0,
     };
     if (i !== words.length - 1) {
       wordObj.targetWord = words[i];
@@ -44,7 +46,10 @@ export default function TypeControls() {
   const [seconds, setSeconds] = useState(0);
   const [wpm, setWpm] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [gameOver, setGameOver] = useState<boolean>(false);
   const [hasTyped, setHasTyped] = useState<boolean>(false);
+  const [attemptedWords, setAttemptedWords] = useState<number>(0);
+  const [totalWords, setTotalWords] = useState<number>(0);
 
   const calcWordPerMin = (words: WordObject[]) => {
     if (words.length === 0) {
@@ -105,7 +110,7 @@ export default function TypeControls() {
               correct = false;
             }
           }
-          return { ...word, typedWord: curKeyArray[index], isCorrect: correct };
+          return { ...word, typedWord: curKeyArray[index], isCorrect: correct, attempted: true};
         }
         return word;
       });
@@ -146,8 +151,15 @@ export default function TypeControls() {
 
       wordList.forEach(obj => {
         targetWordArr.push(obj.targetWord);
-        typedWordArr.push(obj.typedWord);
+        if(obj.attempted) { typedWordArr.push(obj.typedWord); }
       });
+    
+      //console.log(typedWordArr);
+      //console.log(targetWordArr);
+      
+      setTotalWords(targetWordArr.length);
+      setAttemptedWords(typedWordArr.length);
+      setGameOver(targetWordArr.length == typedWordArr.length);
 
       document.addEventListener("keydown", handleKeyDown);
 
@@ -162,6 +174,8 @@ export default function TypeControls() {
       <div className={styles.center}>
         <div>Time: {seconds}</div>
         <div>Words per minute: {wpm}</div>
+        <div>{attemptedWords}/{totalWords}</div>
+        <div>Game over: {gameOver == true ? "true" : "false"}</div>
       </div>
       <div className={styles.container}>
         <div className={!gameStarted ? styles.blur : ""}>
