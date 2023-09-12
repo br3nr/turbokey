@@ -77,7 +77,8 @@ export default function TypeControls() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (gameStarted && hasTyped) {
+      console.log(gameOver)
+      if (gameStarted && hasTyped && !gameOver) {
         setSeconds((prevSeconds) => prevSeconds + 1);
       }
     }, 1000);
@@ -85,7 +86,7 @@ export default function TypeControls() {
     return () => {
       clearInterval(intervalId);
     };
-  }, [gameStarted, hasTyped]);
+  }, [gameStarted, hasTyped, gameOver]);
 
   useEffect(() => {
     const getWordList = async () => {
@@ -104,6 +105,8 @@ export default function TypeControls() {
           let correct = null;
           if (index < curKeyArray.length - 1) {
             // check if the previous word is missspelt
+            console.log(curKeyArray[index])
+            console.log(wordList[index].targetWord)
             if (curKeyArray[index] === wordList[index].targetWord) {
               correct = true;
             } else {
@@ -153,13 +156,15 @@ export default function TypeControls() {
         targetWordArr.push(obj.targetWord);
         if(obj.attempted) { typedWordArr.push(obj.typedWord); }
       });
-    
-      //console.log(typedWordArr);
-      //console.log(targetWordArr);
-      
+     
       setTotalWords(targetWordArr.length);
       setAttemptedWords(typedWordArr.length);
-      setGameOver(targetWordArr.length == typedWordArr.length);
+
+      if(targetWordArr.slice(-2)[0] === typedWordArr.slice(-2)[0] ||
+      targetWordArr.length == typedWordArr.length)
+      {
+        setGameOver(true);
+      }
 
       document.addEventListener("keydown", handleKeyDown);
 
