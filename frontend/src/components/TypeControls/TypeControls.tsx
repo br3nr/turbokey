@@ -8,8 +8,9 @@ interface WordObject {
   typedWord: string;
   isCorrect: boolean | null;
   attempted: boolean;
-  errors: number;
 }
+
+
 
 function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
   const alphabetOrGrammarRegex = /^[a-zA-Z0-9!-/:-@[-`{-~ ]+$/;
@@ -38,7 +39,11 @@ function getWords(sentence: string): WordObject[] {
   return wordList;
 }
 
-export default function TypeControls() {
+type TypeControlProps = {
+  onGameOver: () => void;
+}
+
+export default function TypeControls({onGameOver}: TypeControlProps) {
   const [curKeys, setCurKeys] = useState<string>("");
   const [targetSentence, setTargetSentence] = useState<string>(""); // TODO: replace with words from backend
   const [wordList, setWordList] = useState<WordObject[]>([]);
@@ -55,20 +60,13 @@ export default function TypeControls() {
     if (words.length === 0) {
       return; // Exit early if wordList is empty
     }
-
     let wordCount: number = 0;
-
     for (let i = 0; i < words.length; i++) {
       if (words[i].isCorrect === true) {
         wordCount = wordCount + 1;
       }
     }
-
     setWpm(Math.floor((wordCount / seconds) * 60));
-  };
-
-  const startGame = () => {
-    setGameStarted(true);
   };
 
   useEffect(() => {
@@ -77,7 +75,6 @@ export default function TypeControls() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      console.log(gameOver)
       if (gameStarted && hasTyped && !gameOver) {
         setSeconds((prevSeconds) => prevSeconds + 1);
       }
@@ -159,11 +156,12 @@ export default function TypeControls() {
      
       setTotalWords(targetWordArr.length);
       setAttemptedWords(typedWordArr.length);
-
-      if(targetWordArr.slice(-2)[0] === typedWordArr.slice(-2)[0] ||
+      
+      if(targetWordArr.slice(-2)[0] === typedWordArr.slice(-1)[0] ||
       targetWordArr.length == typedWordArr.length)
       {
         setGameOver(true);
+        onGameOver();
       }
 
       document.addEventListener("keydown", handleKeyDown);
@@ -187,7 +185,7 @@ export default function TypeControls() {
           <WordWrapper wordList={wordList} />
         </div>
         {!gameStarted ? (
-          <button onClick={startGame} className={styles.overlayButton}>
+          <button onClick={() => setGameStarted(true)} className={styles.overlayButton}>
             Click to Start
           </button>
         ) : (
