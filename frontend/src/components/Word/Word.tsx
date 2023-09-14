@@ -2,17 +2,11 @@ import styles from "./Word.module.css";
 import { useEffect, useState } from "react";
 import React from "react";
 import { useTheme } from "next-themes";
+import { WordObject } from "@/types/WordObject";
 
 interface WordProps {
   word: WordObject;
   isFinalWord: boolean;
-}
-
-interface WordObject {
-  targetWord: string;
-  typedWord: string;
-  isCorrect: boolean | null;
-  errors: number | null;
 }
 
 const Word: React.FC<WordProps> = ({ word, isFinalWord }) => {

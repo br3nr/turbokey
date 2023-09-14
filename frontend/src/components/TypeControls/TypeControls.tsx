@@ -2,15 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { generateWordList } from "@/utils/generateWordList";
 import WordWrapper from "../WordWrapper/WordWrapper";
 import styles from "./TypeControls.module.css";
+import { WordObject } from "@/types/WordObject";
 
-interface WordObject {
-  targetWord: string;
-  typedWord: string;
-  isCorrect: boolean | null;
-  attempted: boolean;
+interface LiveScore {
+  wpm: number;
+  errors: number;
 }
 
-
+interface TypeControlProps {
+  onGameOver: () => void;
+}
 
 function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
   const alphabetOrGrammarRegex = /^[a-zA-Z0-9!-/:-@[-`{-~ ]+$/;
@@ -27,7 +28,6 @@ function getWords(sentence: string): WordObject[] {
       typedWord: "",
       isCorrect: null,
       attempted: false,
-      errors: 0,
     };
     if (i !== words.length - 1) {
       wordObj.targetWord = words[i];
@@ -39,15 +39,11 @@ function getWords(sentence: string): WordObject[] {
   return wordList;
 }
 
-type TypeControlProps = {
-  onGameOver: () => void;
-}
 
 export default function TypeControls({onGameOver}: TypeControlProps) {
   const [curKeys, setCurKeys] = useState<string>("");
   const [targetSentence, setTargetSentence] = useState<string>(""); // TODO: replace with words from backend
   const [wordList, setWordList] = useState<WordObject[]>([]);
-  const inputRef = useRef(null);
   const [seconds, setSeconds] = useState(0);
   const [wpm, setWpm] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
@@ -55,6 +51,7 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
   const [hasTyped, setHasTyped] = useState<boolean>(false);
   const [attemptedWords, setAttemptedWords] = useState<number>(0);
   const [totalWords, setTotalWords] = useState<number>(0);
+  const [errors, setErrors] = useState<number>(0);
 
   const calcWordPerMin = (words: WordObject[]) => {
     if (words.length === 0) {
@@ -77,6 +74,9 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
     const intervalId = setInterval(() => {
       if (gameStarted && hasTyped && !gameOver) {
         setSeconds((prevSeconds) => prevSeconds + 1);
+        // add the current wpm 
+        // add the seconds up per error, ad to use effect, gather and wipe here?
+        // 
       }
     }, 1000);
 
@@ -102,8 +102,6 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
           let correct = null;
           if (index < curKeyArray.length - 1) {
             // check if the previous word is missspelt
-            console.log(curKeyArray[index])
-            console.log(wordList[index].targetWord)
             if (curKeyArray[index] === wordList[index].targetWord) {
               correct = true;
             } else {
@@ -139,7 +137,10 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
         setHasTyped(true);
         if (isAlphabetOrGrammar(event) && event.key.length === 1) {
           setCurKeys((prevList) => prevList + event.key);
-          setTypedWords(curKeys + event.key);
+          setTypedWords(curKeys + event.key)
+          
+          // check here or smtn 
+          
         } else if (event.key === "Backspace") {
           let curKeyList = curKeys.split(" ");
           handleBackSpace(curKeyList);

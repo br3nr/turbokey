@@ -2,6 +2,7 @@
 import React from "react";
 import styles from "./page.module.css"
 import Scene from "../components/Scene/Scene";
+import Scoreboard from "../components/Scoreboard/Scoreboard";
 import TypeControls from "../components/TypeControls/TypeControls";
 import ThemeChanger from "@/components/ThemeChanger/ThemeChanger";
 import { useEffect, useState } from "react";
@@ -59,7 +60,7 @@ export default function Home() {
               </div>
             </>
           ) : (
-            <></>
+            <Scoreboard/>
           )}
         </div>
       )}

@@ -1,18 +1,10 @@
 import React from "react";
 import styles from "./WordWrapper.module.css";
 import Word from "../Word/Word";
-import { useEffect, useState } from "react";
-import { match } from "assert";
+import { WordObject } from "@/types/WordObject";
 
 interface WordWrapperProps {
   wordList: WordObject[];
-}
-
-interface WordObject {
-  targetWord: string;
-  typedWord: string;
-  isCorrect: boolean | null;
-  errors: number | null;
 }
 
 const WordWrapper: React.FC<WordWrapperProps> = ({ wordList }) => {
