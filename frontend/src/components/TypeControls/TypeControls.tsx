@@ -51,7 +51,6 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
   const [hasTyped, setHasTyped] = useState<boolean>(false);
   const [attemptedWords, setAttemptedWords] = useState<number>(0);
   const [totalWords, setTotalWords] = useState<number>(0);
-  const [errors, setErrors] = useState<number>(0);
 
   const calcWordPerMin = (words: WordObject[]) => {
     if (words.length === 0) {
@@ -131,6 +130,16 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
     }
   };
 
+  useEffect(() =>
+  {
+    const currentWord = curKeys.split(" ").slice(-1)[0];
+    const currentLetter = currentWord.slice(-1);
+    const targetWord = targetSentence.split(" ")[curKeys.split(" ").length-1];
+    const targetLetter = targetWord[currentWord.length-1];
+    console.log(currentLetter + " " + targetLetter);
+    // How do we detect when space is pressed correctly? 
+  }, [curKeys])
+
   useEffect(() => {
     if (gameStarted) {
       const handleKeyDown = (event: KeyboardEvent) => {
@@ -139,6 +148,8 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
           setCurKeys((prevList) => prevList + event.key);
           setTypedWords(curKeys + event.key)
           
+          
+
           // check here or smtn 
           
         } else if (event.key === "Backspace") {
