@@ -11,7 +11,7 @@ export async function generateWordList(): Promise<string> {
 
   var randomIndexes: number[] = [];
 
-  for (var i = 0; i < 40; i++) {
+  for (var i = 0; i < 20; i++) {
     let randomIndex = Math.floor(Math.random() * words.length);
 
     while (randomIndexes.includes(randomIndex)) {

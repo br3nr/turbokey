@@ -5,8 +5,10 @@ import styles from "./TypeControls.module.css";
 import { WordObject } from "@/types/WordObject";
 
 interface LiveScore {
+  time: number;
   wpm: number;
   errors: number;
+  corrects: number;
 }
 
 interface TypeControlProps {
@@ -51,6 +53,7 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
   const [hasTyped, setHasTyped] = useState<boolean>(false);
   const [attemptedWords, setAttemptedWords] = useState<number>(0);
   const [totalWords, setTotalWords] = useState<number>(0);
+  const [liveScore, setLiveScore] = useState<{[key: number]: LiveScore}>({0:{time: 0, errors: 0, wpm: 0, corrects: 0}});
 
   const calcWordPerMin = (words: WordObject[]) => {
     if (words.length === 0) {
@@ -72,10 +75,7 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (gameStarted && hasTyped && !gameOver) {
-        setSeconds((prevSeconds) => prevSeconds + 1);
-        // add the current wpm 
-        // add the seconds up per error, ad to use effect, gather and wipe here?
-        // 
+        setSeconds((prevSeconds) => prevSeconds + 1); // TODO: create livescore here
       }
     }, 1000);
 
@@ -129,27 +129,48 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
       setCurKeys((prevList) => prevList.slice(0, -1));
     }
   };
+  
 
-  useEffect(() =>
+  function detectError(event: KeyboardEvent)
   {
-    const currentWord = curKeys.split(" ").slice(-1)[0];
-    const currentLetter = currentWord.slice(-1);
-    const targetWord = targetSentence.split(" ")[curKeys.split(" ").length-1];
+    const typedKeys = curKeys + event.key
+    const words = typedKeys.split(" ");
+    const currentWord = words.slice(-1)[0];
+    const targetWord = targetSentence.split(" ")[typedKeys.split(" ").length-1] + " ";
     const targetLetter = targetWord[currentWord.length-1];
-    console.log(currentLetter + " " + targetLetter);
-    // How do we detect when space is pressed correctly? 
-  }, [curKeys])
+    const currentLetter = currentWord.slice(-1);
+
+    if(currentWord.length !=0)
+    {
+      let newScore = liveScore[seconds];
+      if(newScore == undefined)
+      {
+        newScore = { time: seconds + 1, wpm: wpm, errors: 0, corrects: 0 }
+      }
+      
+      if(event.key === " " && currentWord.length != targetWord.length
+          || currentLetter !== targetLetter)
+      { // This seems to be thread safe, by adding seconds to useEffect
+        newScore.errors++
+        setLiveScore({...liveScore, [seconds]: newScore});
+      }
+      else
+      {
+        newScore.corrects++
+        setLiveScore({...liveScore, [seconds]: newScore});
+      }
+    }
+  }
+
 
   useEffect(() => {
     if (gameStarted) {
       const handleKeyDown = (event: KeyboardEvent) => {
         setHasTyped(true);
         if (isAlphabetOrGrammar(event) && event.key.length === 1) {
+          detectError(event)
           setCurKeys((prevList) => prevList + event.key);
           setTypedWords(curKeys + event.key)
-          
-          
-
           // check here or smtn 
           
         } else if (event.key === "Backspace") {
@@ -174,6 +195,7 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
       {
         setGameOver(true);
         onGameOver();
+        console.log(liveScore)
       }
 
       document.addEventListener("keydown", handleKeyDown);
@@ -183,6 +205,7 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
       };
     }
   }, [curKeys, targetSentence, wordList, gameStarted]);
+  
 
   return (
     <>
