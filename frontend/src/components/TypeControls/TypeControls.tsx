@@ -41,10 +41,33 @@ function getWords(sentence: string): WordObject[] {
   return wordList;
 }
 
+function getTargetSentenceArray(wordList: WordObject[]) : string[]
+{
+  const targetSentence = wordList.map((wordObj) => wordObj.targetWord);
+  return targetSentence;
+}
+
+function getTypedSentenceArray(wordList: WordObject[]) : string[]
+{
+  const typedSentence = wordList.map((wordObj) => wordObj.typedWord);
+  return typedSentence;
+}
+
+function getTypedSentenceString(wordList: WordObject[]) : string
+{
+  const typedArr = getTypedSentenceArray(wordList);
+  const sentence = typedArr.filter((str) => str !== "").join(" "); // remove empty cells
+  return sentence;
+}
+
+function getTargetSentenceString(wordList: WordObject[]) : string
+{
+  const sentence = getTypedSentenceArray(wordList).join(" ");
+  return sentence;
+}
 
 export default function TypeControls({onGameOver}: TypeControlProps) {
   const [curKeys, setCurKeys] = useState<string>("");
-  const [targetSentence, setTargetSentence] = useState<string>(""); // TODO: replace with words from backend
   const [wordList, setWordList] = useState<WordObject[]>([]);
   const [seconds, setSeconds] = useState(0);
   const [wpm, setWpm] = useState<number>(0);
@@ -54,6 +77,7 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
   const [attemptedWords, setAttemptedWords] = useState<number>(0);
   const [totalWords, setTotalWords] = useState<number>(0);
   const [liveScore, setLiveScore] = useState<{[key: number]: LiveScore}>({0:{time: 0, errors: 0, wpm: 0, corrects: 0}});
+
 
   const calcWordPerMin = (words: WordObject[]) => {
     if (words.length === 0) {
@@ -87,14 +111,15 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
   useEffect(() => {
     const getWordList = async () => {
       const sentence = await generateWordList();
-      setTargetSentence(sentence);
       setWordList(getWords(sentence));
     };
     getWordList();
   }, []);
 
   const setTypedWords = (keyList: string) => {
+    
     const curKeyArray = keyList.split(" ");
+    console.log(curKeyArray)
     setWordList((prevWordList) => {
       return prevWordList.map((word, index) => {
         if (index < curKeyArray.length) {
@@ -121,6 +146,7 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
         wordList[keyList.length - 2].typedWord
     ) {
       if (keyList[keyList.length - 1].length > 0) {
+
         setTypedWords(curKeys.slice(0, -1));
         setCurKeys((prevList) => prevList.slice(0, -1));
       }
@@ -131,12 +157,15 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
   };
   
 
+
+  /**
   function detectError(event: KeyboardEvent)
   {
     const typedKeys = curKeys + event.key
     const words = typedKeys.split(" ");
     const currentWord = words.slice(-1)[0];
-    const targetWord = targetSentence.split(" ")[typedKeys.split(" ").length-1] + " ";
+    const targetSentence = getTargetSentenceArray(wordList);
+    const targetWord = targetSentence[typedKeys.split(" ").length-1] + " ";
     const targetLetter = targetWord[currentWord.length-1];
     const currentLetter = currentWord.slice(-1);
 
@@ -160,7 +189,7 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
         setLiveScore({...liveScore, [seconds]: newScore});
       }
     }
-  }
+  }**/
 
 
   useEffect(() => {
@@ -168,9 +197,8 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
       const handleKeyDown = (event: KeyboardEvent) => {
         setHasTyped(true);
         if (isAlphabetOrGrammar(event) && event.key.length === 1) {
-          detectError(event)
-          setCurKeys((prevList) => prevList + event.key);
           setTypedWords(curKeys + event.key)
+          setCurKeys(curKeys + event.key)
           // check here or smtn 
           
         } else if (event.key === "Backspace") {
@@ -204,7 +232,7 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
         document.removeEventListener("keydown", handleKeyDown);
       };
     }
-  }, [curKeys, targetSentence, wordList, gameStarted]);
+  }, [curKeys, wordList, gameStarted]);
   
 
   return (
