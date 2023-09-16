@@ -15,12 +15,12 @@ interface TypeControlProps {
   onGameOver: () => void;
 }
 
-function isAlphabetOrGrammar(event: KeyboardEvent): boolean {
+const isAlphabetOrGrammar = (event: KeyboardEvent): boolean => {
   const alphabetOrGrammarRegex = /^[a-zA-Z0-9!-/:-@[-`{-~ ]+$/;
   return alphabetOrGrammarRegex.test(event.key);
-}
+};
 
-function getWords(sentence: string): WordObject[] {
+const getWords = (sentence: string): WordObject[] => {
   const words = sentence.split(" ");
   const wordList: WordObject[] = [];
 
@@ -39,34 +39,32 @@ function getWords(sentence: string): WordObject[] {
     wordList.push(wordObj);
   }
   return wordList;
-}
+};
 
-function getTargetSentenceArray(wordList: WordObject[]) : string[]
-{
+const getTargetSentenceArray = (wordList: WordObject[]): string[] => {
   const targetSentence = wordList.map((wordObj) => wordObj.targetWord);
   return targetSentence;
-}
+};
 
-function getTypedSentenceArray(wordList: WordObject[]) : string[]
-{
+const getTypedSentenceArray = (wordList: WordObject[]): string[] => {
   const typedSentence = wordList.map((wordObj) => wordObj.typedWord);
   return typedSentence;
-}
+};
 
-function getTypedSentenceString(wordList: WordObject[]) : string
-{
-  const typedArr = getTypedSentenceArray(wordList);
-  const sentence = typedArr.filter((str) => str !== "").join(" "); // remove empty cells
-  return sentence;
-}
+const calcWordPerMin = (wordList: WordObject[], seconds: number): number => {
+  if (wordList.length === 0) {
+    return 0; // Exit early if wordList is empty
+  }
+  let wordCount: number = 0;
+  for (let i = 0; i < wordList.length; i++) {
+    if (wordList[i].isCorrect === true) {
+      wordCount = wordCount + 1;
+    }
+  }
+  return Math.floor((wordCount / seconds) * 60);
+};
 
-function getTargetSentenceString(wordList: WordObject[]) : string
-{
-  const sentence = getTypedSentenceArray(wordList).join(" ");
-  return sentence;
-}
-
-export default function TypeControls({onGameOver}: TypeControlProps) {
+export default function TypeControls({ onGameOver }: TypeControlProps) {
   const [curKeys, setCurKeys] = useState<string>("");
   const [wordList, setWordList] = useState<WordObject[]>([]);
   const [seconds, setSeconds] = useState(0);
@@ -74,26 +72,12 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [hasTyped, setHasTyped] = useState<boolean>(false);
-  const [attemptedWords, setAttemptedWords] = useState<number>(0);
-  const [totalWords, setTotalWords] = useState<number>(0);
-  const [liveScore, setLiveScore] = useState<{[key: number]: LiveScore}>({0:{time: 0, errors: 0, wpm: 0, corrects: 0}});
-
-
-  const calcWordPerMin = (words: WordObject[]) => {
-    if (words.length === 0) {
-      return; // Exit early if wordList is empty
-    }
-    let wordCount: number = 0;
-    for (let i = 0; i < words.length; i++) {
-      if (words[i].isCorrect === true) {
-        wordCount = wordCount + 1;
-      }
-    }
-    setWpm(Math.floor((wordCount / seconds) * 60));
-  };
+  const [liveScore, setLiveScore] = useState<{ [key: number]: LiveScore }>({
+    0: { time: 0, errors: 0, wpm: 0, corrects: 0 },
+  });
 
   useEffect(() => {
-    calcWordPerMin(wordList);
+    calcWordPerMin(wordList, seconds);
   }, [seconds]);
 
   useEffect(() => {
@@ -117,9 +101,8 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
   }, []);
 
   const setTypedWords = (keyList: string) => {
-    
     const curKeyArray = keyList.split(" ");
-    console.log(curKeyArray)
+    console.log(curKeyArray);
     setWordList((prevWordList) => {
       return prevWordList.map((word, index) => {
         if (index < curKeyArray.length) {
@@ -132,7 +115,12 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
               correct = false;
             }
           }
-          return { ...word, typedWord: curKeyArray[index], isCorrect: correct, attempted: true};
+          return {
+            ...word,
+            typedWord: curKeyArray[index],
+            isCorrect: correct,
+            attempted: true,
+          };
         }
         return word;
       });
@@ -146,7 +134,6 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
         wordList[keyList.length - 2].typedWord
     ) {
       if (keyList[keyList.length - 1].length > 0) {
-
         setTypedWords(curKeys.slice(0, -1));
         setCurKeys((prevList) => prevList.slice(0, -1));
       }
@@ -155,8 +142,6 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
       setCurKeys((prevList) => prevList.slice(0, -1));
     }
   };
-  
-
 
   /**
   function detectError(event: KeyboardEvent)
@@ -191,39 +176,45 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
     }
   }**/
 
+  const checkGameOver = (wordList: WordObject[]): boolean => {
+    const targetWordArr: string[] = [];
+    const typedWordArr: string[] = [];
+
+    wordList.forEach((obj) => {
+      targetWordArr.push(obj.targetWord);
+      if (obj.attempted) {
+        typedWordArr.push(obj.typedWord);
+      }
+    });
+      
+    console.log(wordList)
+    if (
+      targetWordArr.slice(-2)[0] === typedWordArr.slice(-1)[0] || 
+      targetWordArr.length == typedWordArr.length
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   useEffect(() => {
     if (gameStarted) {
       const handleKeyDown = (event: KeyboardEvent) => {
         setHasTyped(true);
         if (isAlphabetOrGrammar(event) && event.key.length === 1) {
-          setTypedWords(curKeys + event.key)
-          setCurKeys(curKeys + event.key)
-          // check here or smtn 
-          
+          setTypedWords(curKeys + event.key);
+          setCurKeys(curKeys + event.key);
+          // check here or smtn
         } else if (event.key === "Backspace") {
           let curKeyList = curKeys.split(" ");
           handleBackSpace(curKeyList);
         }
       };
 
-      const targetWordArr: string[] = [];
-      const typedWordArr: string[] = [];
-
-      wordList.forEach(obj => {
-        targetWordArr.push(obj.targetWord);
-        if(obj.attempted) { typedWordArr.push(obj.typedWord); }
-      });
-     
-      setTotalWords(targetWordArr.length);
-      setAttemptedWords(typedWordArr.length);
-      
-      if(targetWordArr.slice(-2)[0] === typedWordArr.slice(-1)[0] ||
-      targetWordArr.length == typedWordArr.length)
+      if(checkGameOver(wordList))
       {
-        setGameOver(true);
-        onGameOver();
-        console.log(liveScore)
+        setGameOver(true)
+        onGameOver()
       }
 
       document.addEventListener("keydown", handleKeyDown);
@@ -233,14 +224,12 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
       };
     }
   }, [curKeys, wordList, gameStarted]);
-  
 
   return (
     <>
       <div className={styles.center}>
         <div>Time: {seconds}</div>
         <div>Words per minute: {wpm}</div>
-        <div>{attemptedWords}/{totalWords}</div>
         <div>Game over: {gameOver == true ? "true" : "false"}</div>
       </div>
       <div className={styles.container}>
@@ -248,7 +237,10 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
           <WordWrapper wordList={wordList} />
         </div>
         {!gameStarted ? (
-          <button onClick={() => setGameStarted(true)} className={styles.overlayButton}>
+          <button
+            onClick={() => setGameStarted(true)}
+            className={styles.overlayButton}
+          >
             Click to Start
           </button>
         ) : (
@@ -256,4 +248,5 @@ export default function TypeControls({onGameOver}: TypeControlProps) {
         )}
       </div>
     </>
-  );}
+  );
+}
