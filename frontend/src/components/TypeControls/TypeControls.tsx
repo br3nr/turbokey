@@ -8,16 +8,11 @@ import {
 import WordWrapper from "../WordWrapper/WordWrapper";
 import styles from "./TypeControls.module.css";
 import { WordObject } from "@/types/WordObject";
+import { LiveScore } from "@/types/LiveScore";
 
-interface LiveScore {
-  time: number;
-  wpm: number;
-  errors: number;
-  corrects: number;
-}
 
 interface TypeControlProps {
-  onGameOver: () => void;
+  onGameOver: (liveScore: {[key: number]: LiveScore}) => void;
 }
 
 const getTargetSentenceArray = (wordList: WordObject[]): string[] => {
@@ -38,8 +33,8 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
   });
 
   useEffect(() => {
-    calcWordPerMin(wordList, seconds);
-  }, [seconds]);
+    setWpm(calcWordPerMin(wordList, seconds));
+ }, [seconds, wordList]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -165,14 +160,11 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
           handleBackSpace(curKeyList);
         }
       };
-
       if (checkGameOver(wordList)) {
         setGameOver(true);
-        onGameOver();
+        onGameOver(liveScore);
       }
-
       document.addEventListener("keydown", handleKeyDown);
-
       return () => {
         document.removeEventListener("keydown", handleKeyDown);
       };

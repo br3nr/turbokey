@@ -7,7 +7,8 @@ import TypeControls from "../components/TypeControls/TypeControls";
 import ThemeChanger from "@/components/ThemeChanger/ThemeChanger";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { sleep } from "../utils/utils"
+import { sleep } from "../utils/utils";
+import { LiveScore } from "@/types/LiveScore";
 
 type GameStats = {
   time: number;
@@ -19,6 +20,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [gameOver, setGameOver] = useState(false);
   const [gameStats, setGameStats] = useState<GameStats[]>();
+  const [liveScore, setLiveScore] = useState<{[key: number]: LiveScore}>();
   const router = useRouter();
 
   useEffect(() => {
@@ -36,7 +38,10 @@ export default function Home() {
     fetchUserData();
   }, [loading]);
 
-  const onGameOver = () =>{
+  
+  const onGameOver = (liveScore: { [key: number]: LiveScore }) => {
+    
+    setLiveScore(liveScore)
 
     sleep(1000, () => {
       setGameOver(true);
@@ -60,7 +65,7 @@ export default function Home() {
               </div>
             </>
           ) : (
-            <Scoreboard/>
+            <Scoreboard liveScore={liveScore}/>
           )}
         </div>
       )}
