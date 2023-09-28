@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { generateWordList } from "@/utils/generateWordList";
+import {
+  generateWordList,
+  getWordList,
+  isAlphabetOrGrammar,
+  calcWordPerMin,
+} from "@/utils/WordUtils";
 import WordWrapper from "../WordWrapper/WordWrapper";
 import styles from "./TypeControls.module.css";
 import { WordObject } from "@/types/WordObject";
@@ -15,53 +20,9 @@ interface TypeControlProps {
   onGameOver: () => void;
 }
 
-const isAlphabetOrGrammar = (event: KeyboardEvent): boolean => {
-  const alphabetOrGrammarRegex = /^[a-zA-Z0-9!-/:-@[-`{-~ ]+$/;
-  return alphabetOrGrammarRegex.test(event.key);
-};
-
-const getWords = (sentence: string): WordObject[] => {
-  const words = sentence.split(" ");
-  const wordList: WordObject[] = [];
-
-  for (let i = 0; i < words.length; i++) {
-    let wordObj: WordObject = {
-      targetWord: "",
-      typedWord: "",
-      isCorrect: null,
-      attempted: false,
-    };
-    if (i !== words.length - 1) {
-      wordObj.targetWord = words[i];
-    } else {
-      wordObj.targetWord = words[i];
-    }
-    wordList.push(wordObj);
-  }
-  return wordList;
-};
-
 const getTargetSentenceArray = (wordList: WordObject[]): string[] => {
   const targetSentence = wordList.map((wordObj) => wordObj.targetWord);
   return targetSentence;
-};
-
-const getTypedSentenceArray = (wordList: WordObject[]): string[] => {
-  const typedSentence = wordList.map((wordObj) => wordObj.typedWord);
-  return typedSentence;
-};
-
-const calcWordPerMin = (wordList: WordObject[], seconds: number): number => {
-  if (wordList.length === 0) {
-    return 0; // Exit early if wordList is empty
-  }
-  let wordCount: number = 0;
-  for (let i = 0; i < wordList.length; i++) {
-    if (wordList[i].isCorrect === true) {
-      wordCount = wordCount + 1;
-    }
-  }
-  return Math.floor((wordCount / seconds) * 60);
 };
 
 export default function TypeControls({ onGameOver }: TypeControlProps) {
@@ -93,16 +54,15 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
   }, [gameStarted, hasTyped, gameOver]);
 
   useEffect(() => {
-    const getWordList = async () => {
+    const initWordList = async () => {
       const sentence = await generateWordList();
-      setWordList(getWords(sentence));
+      setWordList(getWordList(sentence));
     };
-    getWordList();
+    initWordList();
   }, []);
 
-  const setTypedWords = (keyList: string) => {
+  const updateWordList = (keyList: string) => {
     const curKeyArray = keyList.split(" ");
-    console.log(curKeyArray);
     setWordList((prevWordList) => {
       return prevWordList.map((word, index) => {
         if (index < curKeyArray.length) {
@@ -134,47 +94,42 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
         wordList[keyList.length - 2].typedWord
     ) {
       if (keyList[keyList.length - 1].length > 0) {
-        setTypedWords(curKeys.slice(0, -1));
+        updateWordList(curKeys.slice(0, -1));
         setCurKeys((prevList) => prevList.slice(0, -1));
       }
     } else {
-      setTypedWords(curKeys.slice(0, -1));
+      updateWordList(curKeys.slice(0, -1));
       setCurKeys((prevList) => prevList.slice(0, -1));
     }
   };
 
-  /**
-  function detectError(event: KeyboardEvent)
-  {
-    const typedKeys = curKeys + event.key
-    const words = typedKeys.split(" ");
+  function detectError(event: KeyboardEvent, keyList: string) {
+    const words = keyList.split(" ");
     const currentWord = words.slice(-1)[0];
     const targetSentence = getTargetSentenceArray(wordList);
-    const targetWord = targetSentence[typedKeys.split(" ").length-1] + " ";
-    const targetLetter = targetWord[currentWord.length-1];
+    const targetWord = targetSentence[keyList.split(" ").length - 1] + " ";
+    const targetLetter = targetWord[currentWord.length - 1];
     const currentLetter = currentWord.slice(-1);
 
-    if(currentWord.length !=0)
-    {
+    if (currentWord.length != 0) {
       let newScore = liveScore[seconds];
-      if(newScore == undefined)
-      {
-        newScore = { time: seconds + 1, wpm: wpm, errors: 0, corrects: 0 }
+      if (newScore == undefined) {
+        newScore = { time: seconds + 1, wpm: wpm, errors: 0, corrects: 0 };
       }
-      
-      if(event.key === " " && currentWord.length != targetWord.length
-          || currentLetter !== targetLetter)
-      { // This seems to be thread safe, by adding seconds to useEffect
-        newScore.errors++
-        setLiveScore({...liveScore, [seconds]: newScore});
-      }
-      else
-      {
-        newScore.corrects++
-        setLiveScore({...liveScore, [seconds]: newScore});
+
+      if (
+        (event.key === " " && currentWord.length != targetWord.length) ||
+        currentLetter !== targetLetter
+      ) {
+        // This seems to be thread safe, by adding seconds to useEffect
+        newScore.errors++;
+        setLiveScore({ ...liveScore, [seconds]: newScore });
+      } else {
+        newScore.corrects++;
+        setLiveScore({ ...liveScore, [seconds]: newScore });
       }
     }
-  }**/
+  }
 
   const checkGameOver = (wordList: WordObject[]): boolean => {
     const targetWordArr: string[] = [];
@@ -186,10 +141,9 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
         typedWordArr.push(obj.typedWord);
       }
     });
-      
-    console.log(wordList)
+
     if (
-      targetWordArr.slice(-2)[0] === typedWordArr.slice(-1)[0] || 
+      targetWordArr.slice(-2)[0] === typedWordArr.slice(-1)[0] ||
       targetWordArr.length == typedWordArr.length
     ) {
       return true;
@@ -202,7 +156,8 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
       const handleKeyDown = (event: KeyboardEvent) => {
         setHasTyped(true);
         if (isAlphabetOrGrammar(event) && event.key.length === 1) {
-          setTypedWords(curKeys + event.key);
+          updateWordList(curKeys + event.key);
+          detectError(event, curKeys + event.key);
           setCurKeys(curKeys + event.key);
           // check here or smtn
         } else if (event.key === "Backspace") {
@@ -211,10 +166,9 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
         }
       };
 
-      if(checkGameOver(wordList))
-      {
-        setGameOver(true)
-        onGameOver()
+      if (checkGameOver(wordList)) {
+        setGameOver(true);
+        onGameOver();
       }
 
       document.addEventListener("keydown", handleKeyDown);

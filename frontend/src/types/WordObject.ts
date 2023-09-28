@@ -4,3 +4,4 @@ export type WordObject ={
   isCorrect: boolean | null;
   attempted: boolean;
 }
+
