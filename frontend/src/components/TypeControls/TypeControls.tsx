@@ -37,9 +37,9 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (gameStarted && hasTyped && !gameOver) {
-        setSeconds((prevSeconds) => prevSeconds + 1); // TODO: create livescore here
+        setSeconds((prevSeconds) => prevSeconds + 0.1); // TODO: create livescore here
       }
-    }, 1000);
+    }, 100);
 
     return () => {
       clearInterval(intervalId);
@@ -168,7 +168,7 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
   return (
     <>
       <div className={styles.center}>
-        <div>Time: {seconds}</div>
+        <div>Time: {Math.floor(seconds)}</div>
         <div>Words per minute: {wpm}</div>
         <div>Game over: {gameOver == true ? "true" : "false"}</div>
       </div>

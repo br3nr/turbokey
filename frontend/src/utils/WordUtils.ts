@@ -50,7 +50,7 @@ export const getWordList = (sentence: string): WordObject[] => {
 };
 
 export const calcWordPerMin = (wordList: WordObject[], seconds: number): number => {
-  if (wordList.length === 0) {
+  if (wordList.length === 0 || seconds === 0) {
     return 0; // Exit early if wordList is empty
   }
   let wordCount: number = 0;
