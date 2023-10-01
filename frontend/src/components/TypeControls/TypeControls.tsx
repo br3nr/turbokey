@@ -12,7 +12,7 @@ import { LiveScore } from "@/types/LiveScore";
 
 
 interface TypeControlProps {
-  onGameOver: (liveScore: {[key: number]: LiveScore}) => void;
+  onGameOver: (liveScore: LiveScore[]) => void;
 }
 
 const getTargetSentenceArray = (wordList: WordObject[]): string[] => {
@@ -28,9 +28,7 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [hasTyped, setHasTyped] = useState<boolean>(false);
-  const [liveScore, setLiveScore] = useState<{ [key: number]: LiveScore }>({
-    0: { time: 0, errors: 0, wpm: 0, corrects: 0 },
-  });
+  const [liveScore, setLiveScore] = useState<LiveScore[]>([]);
 
   useEffect(() => {
     setWpm(calcWordPerMin(wordList, seconds));
@@ -107,21 +105,17 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
     const currentLetter = currentWord.slice(-1);
 
     if (currentWord.length != 0) {
-      let newScore = liveScore[seconds];
-      if (newScore == undefined) {
-        newScore = { time: seconds + 1, wpm: wpm, errors: 0, corrects: 0 };
-      }
-
+      const newScore = { time: seconds, wpm: wpm, errors: 0, corrects: 0 }; 
       if (
         (event.key === " " && currentWord.length != targetWord.length) ||
         currentLetter !== targetLetter
       ) {
         // This seems to be thread safe, by adding seconds to useEffect
         newScore.errors++;
-        setLiveScore({ ...liveScore, [seconds]: newScore });
+        setLiveScore([...liveScore, newScore]);
       } else {
         newScore.corrects++;
-        setLiveScore({ ...liveScore, [seconds]: newScore });
+        setLiveScore([...liveScore, newScore]);
       }
     }
   }

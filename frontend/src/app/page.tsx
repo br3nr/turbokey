@@ -39,7 +39,7 @@ export default function Home() {
   }, [loading]);
 
   
-  const onGameOver = (liveScore: { [key: number]: LiveScore }) => {
+  const onGameOver = (liveScore: LiveScore[]) => {
     
     setLiveScore(liveScore)
 
