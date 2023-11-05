@@ -117,7 +117,7 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
       ) {
         // This seems to be thread safe, by adding seconds to useEffect
         newScore.errors++;
-        setLiveScre([...liveScore, newScore]);
+        setLiveScore([...liveScore, newScore]);
       } else {
         newScore.corrects++;
         setLiveScore([...liveScore, newScore]);
