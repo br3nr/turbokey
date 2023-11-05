@@ -25,24 +25,25 @@ type ScoreboardProps = {
   liveScore: LiveScore[];
 };
 
-type GraphScore = {
+type GraphData = {
   avgWpm: number[];
+  avgRaw: number[];
   time: number[];
 };
 
-export default function Scoreboard({ liveScore }: ScoreboardProps) {
-  const [wpm, setWpm] = useState<number[]>([]);
-  const [seconds, setSeconds] = useState<number[]>([]);
 
-  function getAverages(num_array: number[], wpm: number[]) {
+export default function Scoreboard({ liveScore }: ScoreboardProps) {
+  const [graphData, setGraphData] = useState<GraphData>();  
+  
+  function getAverages(timeArray: number[], wpmArray: number[])
+  {
     const sumMap = new Map<number, number>();
     const countMap = new Map<number, number>();
     const averages: number[] = [];
-    const time: number[] = [];
-
-    for (let i = 0; i < num_array.length; i++) {
-      const position = Math.floor(num_array[i]);
-      const value = wpm[i];
+    
+    for (let i = 0; i < timeArray.length; i++) {
+      const position = Math.floor(timeArray[i]);
+      const value = wpmArray[i];
       if (position != 0) {
         if (sumMap.has(position)) {
           sumMap.set(position, sumMap.get(position)! + value);
@@ -58,39 +59,70 @@ export default function Scoreboard({ liveScore }: ScoreboardProps) {
       const count = countMap.get(position)!;
       const average = sum / count;
       averages.push(average);
-      time.push(position);
     });
+    
+    return averages;
+  }
 
-    const graphScore: GraphScore = {
-      avgWpm: averages,
+
+  function getGraphData(timeArray: number[], wpmArray: number[], rawArray: number[]) {
+    
+    const avgWpm = getAverages(timeArray, wpmArray);
+    const avgRaw = getAverages(timeArray, rawArray);
+    const time = []
+
+    for(let i = 0; i < avgWpm.length; i++)
+    {
+      time.push(i);  
+    }
+
+    const graphScore: GraphData = {
+      avgWpm: avgWpm,
+      avgRaw: avgRaw,
       time: time,
     };
+
+    console.log(time)
+
     return graphScore;
   }
 
   useEffect(() => {
-    const raw_wpm = liveScore.map((score) => score.wpm);
-    const raw_seconds = liveScore.map((seconds) => seconds.time);
-    const graphScore = getAverages(raw_seconds, raw_wpm);
-    setWpm(graphScore.avgWpm);
-    setSeconds(graphScore.time);
-  }, [liveScore]);
+    const wpm = liveScore.map((score) => score.wpm);
+    const rawWpm = liveScore.map((score) => score.rawWpm);
+    const rawSeconds = liveScore.map((seconds) => seconds.time);
+    const graphData = getGraphData(rawSeconds, wpm, rawWpm);
+    setGraphData(graphData);
+    }, [liveScore]);
 
   return (
     <div className="w-full h-full flex items-center justify-center">
       <div className="w-1/2 h-1/2">
         <Line
           data={{
-            labels: seconds,
+            labels: graphData?.time,
             datasets: [
-              {
-                data: wpm,
+               {
+                data: graphData?.avgWpm,
                 backgroundColor: "white",
                 borderColor: "purple",
                 tension: 0.1,
                 fill: true,
-              },
+              },             {
+                data: graphData?.avgRaw,
+                backgroundColor: "gray",
+                borderColor: "gray",
+                tension: 0.1,
+                fill: true,
+              },             
             ],
+          }}
+          options={{
+            scales : {
+              y: {
+                suggestedMin: 0,
+              },
+            },
           }}
         />
       </div>

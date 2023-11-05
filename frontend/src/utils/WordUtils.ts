@@ -58,11 +58,14 @@ export const calcWordPerMin = (wordList: WordObject[], seconds: number): number 
     if (wordList[i].isCorrect === true) {
       wordCount = wordCount + 1;
     }
-  }
-  return Math.floor((wordCount / seconds) * 60);
+  }  return Math.floor((wordCount / seconds) * 60);
 };
 
-
+export const calcRawWordPerMin = (typedWords: string, seconds: number): number => {
+    const totalChars = typedWords.length;
+    const wpm = (totalChars / 5) * 60 / seconds
+    return wpm
+};
 
 export const isAlphabetOrGrammar = (event: KeyboardEvent): boolean => {
   const alphabetOrGrammarRegex = /^[a-zA-Z0-9!-/:-@[-`{-~ ]+$/;

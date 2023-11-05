@@ -4,6 +4,7 @@ import {
   getWordList,
   isAlphabetOrGrammar,
   calcWordPerMin,
+  calcRawWordPerMin,
 } from "@/utils/WordUtils";
 import WordWrapper from "../WordWrapper/WordWrapper";
 import styles from "./TypeControls.module.css";
@@ -22,9 +23,11 @@ const getTargetSentenceArray = (wordList: WordObject[]): string[] => {
 
 export default function TypeControls({ onGameOver }: TypeControlProps) {
   const [curKeys, setCurKeys] = useState<string>("");
+  const [targetKeys, setTargetKeys] = useState<string>("");
   const [wordList, setWordList] = useState<WordObject[]>([]);
   const [seconds, setSeconds] = useState(0);
   const [wpm, setWpm] = useState<number>(0);
+  const [rawWpm, setRawWpm] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [hasTyped, setHasTyped] = useState<boolean>(false);
@@ -32,6 +35,7 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
 
   useEffect(() => {
     setWpm(calcWordPerMin(wordList, seconds));
+    setRawWpm(calcRawWordPerMin(curKeys, seconds));
  }, [seconds, wordList]);
 
   useEffect(() => {
@@ -49,6 +53,7 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
   useEffect(() => {
     const initWordList = async () => {
       const sentence = await generateWordList();
+      setTargetKeys(sentence);
       setWordList(getWordList(sentence));
     };
     initWordList();
@@ -105,14 +110,14 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
     const currentLetter = currentWord.slice(-1);
 
     if (currentWord.length != 0) {
-      const newScore = { time: seconds, wpm: wpm, errors: 0, corrects: 0 }; 
+      const newScore = { time: seconds, wpm: wpm, rawWpm: rawWpm, errors: 0, corrects: 0 }; 
       if (
         (event.key === " " && currentWord.length != targetWord.length) ||
         currentLetter !== targetLetter
       ) {
         // This seems to be thread safe, by adding seconds to useEffect
         newScore.errors++;
-        setLiveScore([...liveScore, newScore]);
+        setLiveScre([...liveScore, newScore]);
       } else {
         newScore.corrects++;
         setLiveScore([...liveScore, newScore]);
@@ -148,7 +153,7 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
           updateWordList(curKeys + event.key);
           detectError(event, curKeys + event.key);
           setCurKeys(curKeys + event.key);
-          // check here or smtn
+          // check here or smtntypecon
         } else if (event.key === "Backspace") {
           let curKeyList = curKeys.split(" ");
           handleBackSpace(curKeyList);
