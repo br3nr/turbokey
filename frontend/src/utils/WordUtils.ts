@@ -12,7 +12,7 @@ export async function generateWordList(): Promise<string> {
 
   var randomIndexes: number[] = [];
 
-  for (var i = 0; i < 20; i++) {
+  for (var i = 0; i < 10; i++) {
     let randomIndex = Math.floor(Math.random() * words.length);
 
     while (randomIndexes.includes(randomIndex)) {
@@ -49,6 +49,15 @@ export const getWordList = (sentence: string): WordObject[] => {
   return wordList;
 };
 
+
+// calcWordPerMin currently has a few issues at present:
+//  1. We add on an extra char for each word to include a correct space, 
+//     however this does not include incorrectly typed words with a correct space, 
+//     or if it is the final word therefore no space.
+//  2. Takes in an already split array, not the full character array. 
+//
+//  Need to take inspiration from:
+//  https://github.com/monkeytypegame/monkeytype/blob/master/frontend/src/ts/test/test-stats.ts
 export const calcWordPerMin = (wordList: WordObject[], seconds: number): number => {
   if (wordList.length === 0 || seconds === 0) {
     return 0; // Exit early if wordList is empty
@@ -56,9 +65,9 @@ export const calcWordPerMin = (wordList: WordObject[], seconds: number): number 
   let wordCount: number = 0;
   for (let i = 0; i < wordList.length; i++) {
     if (wordList[i].isCorrect === true) {
-      wordCount = wordCount + 1;
+      wordCount = wordCount + wordList[i].targetWord.length;
     }
-  }  return Math.floor((wordCount / seconds) * 60);
+  }  return Math.floor(((wordCount) * (60 / seconds))/5);
 };
 
 export const calcRawWordPerMin = (typedWords: string, seconds: number): number => {
