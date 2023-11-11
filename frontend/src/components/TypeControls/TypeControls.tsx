@@ -1,16 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import {
   generateWordList,
   getWordList,
   isAlphabetOrGrammar,
   calcWordPerMin,
   calcRawWordPerMin,
-} from "@/utils/WordUtils";
-import WordWrapper from "../WordWrapper/WordWrapper";
-import styles from "./TypeControls.module.css";
-import { WordObject } from "@/types/WordObject";
-import { LiveScore } from "@/types/LiveScore";
-
+} from '@/utils/WordUtils';
+import WordWrapper from '../WordWrapper/WordWrapper';
+import styles from './TypeControls.module.css';
+import { WordObject } from '@/types/WordObject';
+import { LiveScore } from '@/types/LiveScore';
+import { TargetSentence } from '@/classes/TargetSentence';
+import { InputSentence } from '@/classes/InputSentence';
 
 interface TypeControlProps {
   onGameOver: (liveScore: LiveScore[]) => void;
@@ -22,11 +23,16 @@ const getTargetSentenceArray = (wordList: WordObject[]): string[] => {
 };
 
 export default function TypeControls({ onGameOver }: TypeControlProps) {
-  const [curKeys, setCurKeys] = useState<string>("");
-  const [targetKeys, setTargetKeys] = useState<string>("");
+  const [curKeys, setCurKeys] = useState<string>('');
   const [wordList, setWordList] = useState<WordObject[]>([]);
   const [seconds, setSeconds] = useState(0);
   const [wpm, setWpm] = useState<number>(0);
+  const [targetSentence, setTargetSentence] = useState<TargetSentence>(
+    new TargetSentence('')
+  );
+  const [inputSentence, setInputSentence] = useState<InputSentence>(
+    new InputSentence()
+  );
   const [rawWpm, setRawWpm] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
@@ -36,7 +42,7 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
   useEffect(() => {
     setWpm(calcWordPerMin(wordList, seconds));
     setRawWpm(calcRawWordPerMin(curKeys, seconds));
- }, [seconds, wordList]);
+  }, [seconds, wordList]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -53,14 +59,14 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
   useEffect(() => {
     const initWordList = async () => {
       const sentence = await generateWordList();
-      setTargetKeys(sentence);
       setWordList(getWordList(sentence));
+      setTargetSentence(new TargetSentence(sentence));
     };
     initWordList();
   }, []);
 
   const updateWordList = (keyList: string) => {
-    const curKeyArray = keyList.split(" ");
+    const curKeyArray = keyList.split(' ');
     setWordList((prevWordList) => {
       return prevWordList.map((word, index) => {
         if (index < curKeyArray.length) {
@@ -85,6 +91,10 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
     });
   };
 
+  useEffect(() => {
+    for (let i = 0; i < targetSentence?.getLength(); i++) {}
+  }, [curKeys]);
+
   const handleBackSpace = (keyList: string[]) => {
     if (
       wordList[keyList.length - 2] &&
@@ -102,17 +112,23 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
   };
 
   function detectError(event: KeyboardEvent, keyList: string) {
-    const words = keyList.split(" ");
+    const words = keyList.split(' ');
     const currentWord = words.slice(-1)[0];
     const targetSentence = getTargetSentenceArray(wordList);
-    const targetWord = targetSentence[keyList.split(" ").length - 1] + " ";
+    const targetWord = targetSentence[keyList.split(' ').length - 1] + ' ';
     const targetLetter = targetWord[currentWord.length - 1];
     const currentLetter = currentWord.slice(-1);
 
     if (currentWord.length != 0) {
-      const newScore = { time: seconds, wpm: wpm, rawWpm: rawWpm, errors: 0, corrects: 0 }; 
+      const newScore = {
+        time: seconds,
+        wpm: wpm,
+        rawWpm: rawWpm,
+        errors: 0,
+        corrects: 0,
+      };
       if (
-        (event.key === " " && currentWord.length != targetWord.length) ||
+        (event.key === ' ' && currentWord.length != targetWord.length) ||
         currentLetter !== targetLetter
       ) {
         // This seems to be thread safe, by adding seconds to useEffect
@@ -154,8 +170,8 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
           detectError(event, curKeys + event.key);
           setCurKeys(curKeys + event.key);
           // check here or smtntypecon
-        } else if (event.key === "Backspace") {
-          let curKeyList = curKeys.split(" ");
+        } else if (event.key === 'Backspace') {
+          let curKeyList = curKeys.split(' ');
           handleBackSpace(curKeyList);
         }
       };
@@ -163,9 +179,9 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
         setGameOver(true);
         onGameOver(liveScore);
       }
-      document.addEventListener("keydown", handleKeyDown);
+      document.addEventListener('keydown', handleKeyDown);
       return () => {
-        document.removeEventListener("keydown", handleKeyDown);
+        document.removeEventListener('keydown', handleKeyDown);
       };
     }
   }, [curKeys, wordList, gameStarted]);
@@ -175,10 +191,10 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
       <div className={styles.center}>
         <div>Time: {Math.floor(seconds)}</div>
         <div>Words per minute: {wpm}</div>
-        <div>Game over: {gameOver == true ? "true" : "false"}</div>
+        <div>Game over: {gameOver == true ? 'true' : 'false'}</div>
       </div>
       <div className={styles.container}>
-        <div className={!gameStarted ? styles.blur : ""}>
+        <div className={!gameStarted ? styles.blur : ''}>
           <WordWrapper wordList={wordList} />
         </div>
         {!gameStarted ? (

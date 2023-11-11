@@ -34,6 +34,7 @@ type GraphData = {
 
 export default function Scoreboard({ liveScore }: ScoreboardProps) {
   const [graphData, setGraphData] = useState<GraphData>();  
+  const [wpm, setWpm] = useState<number>();
   
   function getAverages(timeArray: number[], wpmArray: number[])
   {
@@ -96,8 +97,18 @@ export default function Scoreboard({ liveScore }: ScoreboardProps) {
     }, [liveScore]);
 
   return (
+  <>
+    <div className="flex items-center justify-center">
+      <div>
+      {liveScore[liveScore.length-1].wpm}
+      </div>
+      <div>
+      {liveScore[liveScore.length-1].time}
+     </div>
+    </div>
+
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-1/2 h-1/2">
+          <div className="w-1/2 h-1/2">
         <Line
           data={{
             labels: graphData?.time,
@@ -127,5 +138,6 @@ export default function Scoreboard({ liveScore }: ScoreboardProps) {
         />
       </div>
     </div>
+  </>
   );
 }
