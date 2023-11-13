@@ -12,12 +12,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        dark: {
-          primary: '#FF0000', // Your dark mode font color
-        },
-        light: {
-          primary: '#FF0000', // Your light mode font color
-        },
+          primary: '#FF0000',
+          secondary: "magenta",
       },
     },
   },

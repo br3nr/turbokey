@@ -1,6 +1,6 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { LiveScore } from "@/types/LiveScore";
+'use client';
+import React, { useState, useEffect } from 'react';
+import { LiveScore } from '@/types/LiveScore';
 
 import {
   Chart as ChartJS,
@@ -9,9 +9,9 @@ import {
   Tooltip,
   PointElement,
   LineElement,
-} from "chart.js";
+} from 'chart.js';
 
-import { Line } from "react-chartjs-2";
+import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
@@ -31,17 +31,15 @@ type GraphData = {
   time: number[];
 };
 
-
 export default function Scoreboard({ liveScore }: ScoreboardProps) {
-  const [graphData, setGraphData] = useState<GraphData>();  
+  const [graphData, setGraphData] = useState<GraphData>();
   const [wpm, setWpm] = useState<number>();
-  
-  function getAverages(timeArray: number[], wpmArray: number[])
-  {
+
+  function getAverages(timeArray: number[], wpmArray: number[]) {
     const sumMap = new Map<number, number>();
     const countMap = new Map<number, number>();
     const averages: number[] = [];
-    
+
     for (let i = 0; i < timeArray.length; i++) {
       const position = Math.floor(timeArray[i]);
       const value = wpmArray[i];
@@ -61,20 +59,21 @@ export default function Scoreboard({ liveScore }: ScoreboardProps) {
       const average = sum / count;
       averages.push(average);
     });
-    
+
     return averages;
   }
 
-
-  function getGraphData(timeArray: number[], wpmArray: number[], rawArray: number[]) {
-    
+  function getGraphData(
+    timeArray: number[],
+    wpmArray: number[],
+    rawArray: number[]
+  ) {
     const avgWpm = getAverages(timeArray, wpmArray);
     const avgRaw = getAverages(timeArray, rawArray);
-    const time = []
+    const time = [];
 
-    for(let i = 0; i < avgWpm.length; i++)
-    {
-      time.push(i);  
+    for (let i = 0; i < avgWpm.length; i++) {
+      time.push(i+1); // Add 1 so that the graph starts at 1
     }
 
     const graphScore: GraphData = {
@@ -83,7 +82,7 @@ export default function Scoreboard({ liveScore }: ScoreboardProps) {
       time: time,
     };
 
-    console.log(time)
+    console.log(time);
 
     return graphScore;
   }
@@ -94,50 +93,54 @@ export default function Scoreboard({ liveScore }: ScoreboardProps) {
     const rawSeconds = liveScore.map((seconds) => seconds.time);
     const graphData = getGraphData(rawSeconds, wpm, rawWpm);
     setGraphData(graphData);
-    }, [liveScore]);
+  }, [liveScore]);
 
   return (
-  <>
-    <div className="flex items-center justify-center">
-      <div>
-      {liveScore[liveScore.length-1].wpm}
+    <>
+      <div className="flex items-center justify-center space-x-24 p-5">
+        <div className="flex items-center justify-center">
+          <p className="text-2xl">wpm: </p>
+          <p className="text-2xl pl-2 text-secondary">{liveScore[liveScore.length - 1].wpm}</p>
+        </div>
+        <div className="flex items-center justify-center">
+          <p className="text-2xl">time: </p>
+          <p className="text-2xl pl-2 text-secondary">
+            {liveScore[liveScore.length - 1].time.toFixed(2)}
+          </p>
+        </div>
       </div>
-      <div>
-      {liveScore[liveScore.length-1].time}
-     </div>
-    </div>
-
-    <div className="w-full h-full flex items-center justify-center">
-          <div className="w-1/2 h-1/2">
-        <Line
-          data={{
-            labels: graphData?.time,
-            datasets: [
-               {
-                data: graphData?.avgWpm,
-                backgroundColor: "white",
-                borderColor: "purple",
-                tension: 0.1,
-                fill: true,
-              },             {
-                data: graphData?.avgRaw,
-                backgroundColor: "gray",
-                borderColor: "gray",
-                tension: 0.1,
-                fill: true,
-              },             
-            ],
-          }}
-          options={{
-            scales : {
-              y: {
-                suggestedMin: 0,
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="w-1/2 h-1/2">
+          <Line
+            data={{
+              labels: graphData?.time,
+              datasets: [
+                {
+                  data: graphData?.avgWpm,
+                  backgroundColor: 'white',
+                  borderColor: 'magenta',
+                  tension: 0.1,
+                  fill: true,
+                },
+                {
+                  data: graphData?.avgRaw,
+                  backgroundColor: 'gray',
+                  borderColor: 'gray',
+                  tension: 0.1,
+                  fill: true,
+                },
+              ],
+            }}
+            options={{
+              scales: {
+                y: {
+                  suggestedMin: 0,
+                },
               },
-            },
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
-    </div>
-  </>
+    </>
   );
 }
