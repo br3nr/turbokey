@@ -1,14 +1,15 @@
-"use client";
-import React from "react";
-import styles from "./page.module.css"
-import Scene from "../components/Scene/Scene";
-import Scoreboard from "../components/Scoreboard/Scoreboard";
-import TypeControls from "../components/TypeControls/TypeControls";
-import ThemeChanger from "@/components/ThemeChanger/ThemeChanger";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { sleep } from "../utils/utils";
-import { LiveScore } from "@/types/LiveScore";
+'use client';
+import React from 'react';
+import styles from './page.module.css';
+import Scene from '../components/Scene/Scene';
+import Scoreboard from '../components/Scoreboard/Scoreboard';
+import TypeControls from '../components/TypeControls/TypeControls';
+import ThemeChanger from '@/components/ThemeChanger/ThemeChanger';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { sleep } from '../utils/utils';
+import { LiveScore } from '@/types/LiveScore';
+import { FinalScore } from '@/types/FinalScore';
 
 type GameStats = {
   time: number;
@@ -20,16 +21,16 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [gameOver, setGameOver] = useState(false);
   const [gameStats, setGameStats] = useState<GameStats[]>();
-  const [liveScore, setLiveScore] = useState<{[key: number]: LiveScore}>();
+  const [liveScore, setLiveScore] = useState<{ [key: number]: LiveScore }>();
   const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const response = await fetch("http://localhost:8000/auth/login", {
-        credentials: "include",
+      const response = await fetch('http://localhost:8000/auth/login', {
+        credentials: 'include',
       });
       if (response.status === 401) {
-        router.push("/login");
+        router.push('/login');
       } else {
         setLoading(false);
         console.log(await response.json());
@@ -38,11 +39,9 @@ export default function Home() {
     fetchUserData();
   }, [loading]);
 
-  
-  const onGameOver = (liveScore: LiveScore[]) => {
-    
-    setLiveScore(liveScore)
-
+  const onGameOver = (liveScore: LiveScore[], finalScore: FinalScore) => {
+    setLiveScore(liveScore);
+    console.log(finalScore);
     sleep(1000, () => {
       setGameOver(true);
     });
@@ -65,7 +64,7 @@ export default function Home() {
               </div>
             </>
           ) : (
-            <Scoreboard liveScore={liveScore}/>
+            <Scoreboard liveScore={liveScore} />
           )}
         </div>
       )}

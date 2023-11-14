@@ -6,15 +6,17 @@ import {
   calcWordPerMin,
   calcRawWordPerMin,
 } from '@/utils/WordUtils';
+
 import WordWrapper from '../WordWrapper/WordWrapper';
 import styles from './TypeControls.module.css';
 import { WordObject } from '@/types/WordObject';
 import { LiveScore } from '@/types/LiveScore';
+import { FinalScore } from '@/types/FinalScore';
 import { TargetSentence } from '@/classes/TargetSentence';
 import { InputSentence } from '@/classes/InputSentence';
 
 interface TypeControlProps {
-  onGameOver: (liveScore: LiveScore[]) => void;
+  onGameOver: (liveScore: LiveScore[], finalScore: FinalScore) => void;
 }
 
 const getTargetSentenceArray = (wordList: WordObject[]): string[] => {
@@ -26,23 +28,16 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
   const [curKeys, setCurKeys] = useState<string>('');
   const [wordList, setWordList] = useState<WordObject[]>([]);
   const [seconds, setSeconds] = useState(0);
-  const [wpm, setWpm] = useState<number>(0);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [gameOver, setGameOver] = useState<boolean>(false);
+  const [hasTyped, setHasTyped] = useState<boolean>(false);
+  const [liveScore, setLiveScore] = useState<LiveScore[]>([]);
   const [targetSentence, setTargetSentence] = useState<TargetSentence>(
     new TargetSentence('')
   );
   const [inputSentence, setInputSentence] = useState<InputSentence>(
     new InputSentence()
   );
-  const [rawWpm, setRawWpm] = useState<number>(0);
-  const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [gameOver, setGameOver] = useState<boolean>(false);
-  const [hasTyped, setHasTyped] = useState<boolean>(false);
-  const [liveScore, setLiveScore] = useState<LiveScore[]>([]);
-
-  useEffect(() => {
-    setWpm(calcWordPerMin(wordList, seconds));
-    setRawWpm(calcRawWordPerMin(curKeys, seconds));
-  }, [seconds, wordList]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -122,8 +117,8 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
     if (currentWord.length != 0) {
       const newScore = {
         time: seconds,
-        wpm: wpm,
-        rawWpm: rawWpm,
+        wpm: calcWordPerMin(wordList, seconds),
+        rawWpm: calcRawWordPerMin(curKeys, seconds),
         errors: 0,
         corrects: 0,
       };
@@ -177,7 +172,12 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
       };
       if (checkGameOver(wordList)) {
         setGameOver(true);
-        onGameOver(liveScore);
+        const finalScore = {
+          wpm: liveScore[liveScore.length-1].wpm,
+          raw: liveScore[liveScore.length-1].rawWpm,
+          accuracy: 0,
+        }
+        onGameOver(liveScore, finalScore);
       }
       document.addEventListener('keydown', handleKeyDown);
       return () => {
@@ -188,11 +188,6 @@ export default function TypeControls({ onGameOver }: TypeControlProps) {
 
   return (
     <>
-      <div className={styles.center}>
-        <div>Time: {Math.floor(seconds)}</div>
-        <div>Words per minute: {wpm}</div>
-        <div>Game over: {gameOver == true ? 'true' : 'false'}</div>
-      </div>
       <div className={styles.container}>
         <div className={!gameStarted ? styles.blur : ''}>
           <WordWrapper wordList={wordList} />
