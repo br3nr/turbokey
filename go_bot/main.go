@@ -3,7 +3,8 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"encoding/gob"
+  "fmt"
 	"io"
 	"log"
 	"net/http"
@@ -12,12 +13,15 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 	"golang.org/x/oauth2"
+  "github.com/alexedwards/scs/v2"
 )
 
 const (
 	ScopeIdentify = "identify"
 	ScopeEmail    = "email"
 )
+
+var sessionManager *scs.SessionManager
 
 type DiscordUser struct {
   ID            string  `json:"id"`
@@ -74,17 +78,45 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-  
-	http.Redirect(w, r, "http://localhost:3000", http.StatusFound)
+
+  sessionManager.Put(r.Context(), "id", user.ID) 
+  sessionManager.Put(r.Context(), "username", user.Username) 
+  sessionManager.Put(r.Context(), "avatar", user.Avatar) 
+  sessionManager.Put(r.Context(), "banner", user.Banner) 
+	
+  http.Redirect(w, r, "http://localhost:3000", http.StatusFound)
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	
+  w.Header().Set("Content-Type", "application/json")
+    
+  id := sessionManager.GetString(r.Context(), "id")
+  username := sessionManager.GetString(r.Context(), "username")
+  avatar := sessionManager.GetString(r.Context(), "avatar")
+  banner := sessionManager.GetString(r.Context(), "banner")
+
+  var user DiscordUser
+  user.ID = id
+  user.Username = username
+  user.Avatar = avatar
+  user.Banner = banner
+
+  b, err := json.Marshal(user)
+
+  if err!=nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
+
+  fmt.Println(string(b))
+  w.Write(b)
 }
 
 func handleRequests() {
-	r := chi.NewRouter()
-
+  sessionManager = scs.New()
+  gob.Register(DiscordUser{})
+	
+  r := chi.NewRouter()
 	r.Get("/", homePage)
 	r.Get("/auth/redirect", redirect)
 	r.Get("/auth/login", login)
@@ -92,15 +124,15 @@ func handleRequests() {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowCredentials: true,
-		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+    AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowedMethods:   []string{"GET", "HEAD", "POST", "PUT", "OPTIONS"},
 	})
 
 	handler := c.Handler(r)
-
+  
 	port := ":8000"
 	fmt.Printf("Server is running on port %s...\n", port)
-	err := http.ListenAndServe(port, handler)
+	err := http.ListenAndServe(port, sessionManager.LoadAndSave(handler))
 	if err != nil {
 		log.Fatal(err)
 	}
