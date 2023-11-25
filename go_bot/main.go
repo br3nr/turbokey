@@ -8,9 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-
 	"github.com/go-chi/chi"
-	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 	"golang.org/x/oauth2"
@@ -22,13 +20,11 @@ const (
 )
 
 type DiscordUser struct {
-	id            string `json:"id"`
-	username      string `json:"username"`
-	avatar_url    string `json:"avatar"`
-	discriminator string `json:"discriminator"`
+  ID            string  `json:"id"`
+	Username      string  `json:"username"`
+	Avatar        string  `json:"avatar"`
+	Banner        string  `json:"banner"`
 }
-
-var store = sessions.NewCookieStore([]byte("your-secret-key"))
 
 var Endpoint = oauth2.Endpoint{
 	AuthURL:   "https://discord.com/api/oauth2/authorize",
@@ -73,53 +69,17 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 
 	var user *DiscordUser
 	err = json.Unmarshal(body, &user)
-	if err != nil {
+	
+  if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	session, err := store.Get(r, "turbo-session")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	session.Values["id"] = user.id
-	session.Values["discriminator"] = user.discriminator
-	session.Values["avatar_url"] = user.avatar_url
-	session.Values["username"] = user.username
-
-	err = session.Save(r, w)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
+  
 	http.Redirect(w, r, "http://localhost:3000", http.StatusFound)
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, "turbo-session")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	user := DiscordUser{
-		id:            session.Values["id"].(string),
-		discriminator: session.Values["discriminator"].(string),
-		avatar_url:    session.Values["avatar_url"].(string),
-		username:      session.Values["username"].(string),
-	}
-
-	userJSON, err := json.Marshal(user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(userJSON)
+	
 }
 
 func handleRequests() {
