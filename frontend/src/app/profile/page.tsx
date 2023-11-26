@@ -1,26 +1,34 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import Image from "next/image";
-
+import React from 'react';
+import { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import Image from 'next/image';
+import {useRouter} from 'next/navigation';
 
 //TODO make interface
 
 export default function Page() {
-  const [userData, setUserData] = useState("");
+  const [userData, setUserData] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       // check if cookie exists
       const cookie = Cookies.get();
       console.log(cookie);
-      const response = await fetch("http://localhost:8000/auth/login", {
-        credentials: "include",
+      const response = await fetch('http://localhost:8000/auth/login', {
+        credentials: 'include',
       });
-      const data = await response.json();
-      setUserData(data);
+
+      if (response.status == 200) {
+        const data = await response.json();
+        console.log('here');
+        console.log(data);
+        setUserData(data);
+      } else {
+        router.push('/login');
+      }
     };
     fetchData();
   }, []);
@@ -36,10 +44,8 @@ export default function Page() {
             className="rounded-full "
           />
         </div>
-        <div className="text-2xl">{userData.name}</div>
-        <div className="flex items-center ml-auto">
-
-        </div>
+        <div className="text-2xl">{userData.username}</div>
+        <div className="flex items-center ml-auto"></div>
       </div>
     </div>
   );
