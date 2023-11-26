@@ -33,7 +33,6 @@ export default function Home() {
         router.push('/login');
       } else {
         setLoading(false);
-        console.log(await response.json());
       }
     };
     fetchUserData();

@@ -94,6 +94,11 @@ func login(w http.ResponseWriter, r *http.Request) {
   username := sessionManager.GetString(r.Context(), "username")
   avatar := sessionManager.GetString(r.Context(), "avatar")
   banner := sessionManager.GetString(r.Context(), "banner")
+  
+  if id == "" || username == "" {
+    http.Error(w, "Not authorised", http.StatusUnauthorized)
+    return
+  }
 
   var user DiscordUser
   user.ID = id
