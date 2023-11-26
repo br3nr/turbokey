@@ -2,18 +2,19 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"encoding/gob"
-  "fmt"
+	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 	"golang.org/x/oauth2"
-  "github.com/alexedwards/scs/v2"
 )
 
 const (
@@ -24,10 +25,10 @@ const (
 var sessionManager *scs.SessionManager
 
 type DiscordUser struct {
-  ID            string  `json:"id"`
-	Username      string  `json:"username"`
-	Avatar        string  `json:"avatar"`
-	Banner        string  `json:"banner"`
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Avatar   string `json:"avatar"`
+	Banner   string `json:"banner"`
 }
 
 var Endpoint = oauth2.Endpoint{
@@ -73,55 +74,48 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 
 	var user *DiscordUser
 	err = json.Unmarshal(body, &user)
-	
-  if err != nil {
+
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-  sessionManager.Put(r.Context(), "id", user.ID) 
-  sessionManager.Put(r.Context(), "username", user.Username) 
-  sessionManager.Put(r.Context(), "avatar", user.Avatar) 
-  sessionManager.Put(r.Context(), "banner", user.Banner) 
-	
-  http.Redirect(w, r, "http://localhost:3000", http.StatusFound)
+	sessionManager.Put(r.Context(), "id", user.ID)
+	sessionManager.Put(r.Context(), "username", user.Username)
+	sessionManager.Put(r.Context(), "avatar", user.Avatar)
+	sessionManager.Put(r.Context(), "banner", user.Banner)
+
+	http.Redirect(w, r, "http://localhost:3000", http.StatusFound)
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-  w.Header().Set("Content-Type", "application/json")
-    
-  id := sessionManager.GetString(r.Context(), "id")
-  username := sessionManager.GetString(r.Context(), "username")
-  avatar := sessionManager.GetString(r.Context(), "avatar")
-  banner := sessionManager.GetString(r.Context(), "banner")
-  
-  if id == "" || username == "" {
-    http.Error(w, "Not authorised", http.StatusUnauthorized)
-    return
-  }
+	w.Header().Set("Content-Type", "application/json")
 
-  var user DiscordUser
-  user.ID = id
-  user.Username = username
-  user.Avatar = avatar
-  user.Banner = banner
+	if sessionManager.Exists(r.Context(), "id") {
+		var user DiscordUser
+		user.ID = sessionManager.GetString(r.Context(), "id")
+		user.Username = sessionManager.GetString(r.Context(), "username")
+		user.Avatar = sessionManager.GetString(r.Context(), "avatar")
+		user.Banner = sessionManager.GetString(r.Context(), "banner")
 
-  b, err := json.Marshal(user)
-
-  if err!=nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    return
-  }
-
-  fmt.Println(string(b))
-  w.Write(b)
+		b, err := json.Marshal(user)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Write(b)
+	} else {
+		fmt.Println("User was not found in the session manager")
+		http.Error(w, "Not authenticated", http.StatusUnauthorized)
+		return
+	}
 }
 
 func handleRequests() {
-  sessionManager = scs.New()
-  gob.Register(DiscordUser{})
-	
-  r := chi.NewRouter()
+	sessionManager = scs.New()
+	gob.Register(DiscordUser{})
+
+	r := chi.NewRouter()
 	r.Get("/", homePage)
 	r.Get("/auth/redirect", redirect)
 	r.Get("/auth/login", login)
@@ -129,12 +123,12 @@ func handleRequests() {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowCredentials: true,
-    AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowedMethods:   []string{"GET", "HEAD", "POST", "PUT", "OPTIONS"},
 	})
 
 	handler := c.Handler(r)
-  
+
 	port := ":8000"
 	fmt.Printf("Server is running on port %s...\n", port)
 	err := http.ListenAndServe(port, sessionManager.LoadAndSave(handler))
