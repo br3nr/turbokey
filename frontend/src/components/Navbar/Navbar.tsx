@@ -22,6 +22,9 @@ export default function Navbar(props: ProfileProps) {
   const handleMouseLeave = () => {
     setIsHovering(false);
   };
+
+  console.log(props.avatar)
+
   return (
     <div className="items-center justify-center flex w-1/2 m-auto mt-10">
       <div

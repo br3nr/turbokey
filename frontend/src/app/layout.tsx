@@ -9,7 +9,6 @@ import { Roboto_Mono } from "next/font/google";
 
 const robotoMono = Roboto_Mono({ subsets: ["latin"] });
 
-
 export default function RootLayout({
   children,
 }: {
@@ -17,6 +16,7 @@ export default function RootLayout({
 }) {
   const [username, setUsername] = useState("");
   const [avatar, setAvatar] = useState("");
+  const pathname = usePathname();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -26,7 +26,7 @@ export default function RootLayout({
       if (response.status === 200) {
         const data = await response.json();
         setUsername(data.username);
-        setAvatar(data.avatar_url);
+        setAvatar(`https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`);
       }
     };
 
@@ -35,7 +35,6 @@ export default function RootLayout({
     }
   });
 
-  const pathname = usePathname();
   return (
     <html lang="en">
       <body style={robotoMono.style}>
